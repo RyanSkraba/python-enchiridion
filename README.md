@@ -1,0 +1,161 @@
+My Python Scripts
+=================
+
+Automate my world! 
+
+
+Building and running
+--------------------
+
+```bash
+# Setting up and using virtualenv.
+python -m venv env/
+source env/bin/activate
+pip install --upgrade pip
+
+./setup.py test
+
+# Create a distribution
+pip install wheel
+./setup.py sdist bdist_wheel
+
+# Install from repo
+./setup.py install
+
+# Or install from wheel
+pip install dist/python_scripts-*.whl
+
+# After installing, you can run the script.
+
+# Print usage instructions
+hello-world --help
+
+# Run a server.
+hello-world                 # prints Hello, World!
+hello-world --name=comrade  # prints Hello, comrade!
+```
+
+
+Testing and automation
+----------------------
+
+### [Black](https://black.readthedocs.io/en/stable/): The uncompromising code formatter
+
+```bash
+pip install black
+black bin/* scanscan/ tests/ setup.py 
+```
+
+### [Flake8](https://flake8.pycqa.org/en/latest/): Your Tool For Style Guide Enforcement
+
+```bash
+pip install flake8
+flake8 bin/* scanscan/ tests/ setup.py
+```
+
+### [Nose](https://nose.readthedocs.io/en/latest/) is nicer testing for python
+
+```bash
+pip install nose
+nosetests
+```
+
+### [Tox](https://tox.readthedocs.io/en/latest/): standardize testing in Python
+
+See [tox.ini](./tox.ini).
+
+```bash
+pip install tox
+tox
+```
+
+IntelliJ setup
+--------------
+
+* IntelliJ
+  - [Using the Python plugin](https://www.jetbrains.com/help/idea/plugin-overview.html#63317)
+  - Set up a Python SDK virtualenv in `$PROJECT/env`
+
+Running in docker
+-----------------
+
+```bash
+docker run -it --volume $PWD:/opt/workdir --workdir /opt/workdir python:3.6 bash
+```
+
+Best practices
+--------------
+
+* [PEP 8 -- Style Guide for Python Code](https://www.python.org/dev/peps/pep-0008/)
+* [PEP 257 -- Docstring Conventions](https://www.python.org/dev/peps/pep-0257/)
+* [PEP 440 -- Version Identification and Dependency Specification](https://www.python.org/dev/peps/pep-0440/)
+
+Standard modules
+----------------
+
+* The **`ast`** module ([doc][ast-doc], [tests][ast-tests]) - Abstract Syntax Trees
+  - Scary example code:
+    - [**_Scary1_**](https://nedbatchelder.com/blog/201206/eval_really_is_dangerous.html): has 
+      some good discussion on how to sanitize
+    - [**_Scary2_**](https://nedbatchelder.com/blog/201302/finding_python_3_builtins.html)
+    - [**_Scary3_**](https://stackoverflow.com/questions/35804961/python-eval-is-it-still-dangerous-if-i-disable-builtins-and-attribute-access)
+  - [Tutorial - Dynamic Python](https://realpython.com/python-eval-function/)
+  - [Better docs](https://greentreesnakes.readthedocs.io/en/latest/)
+
+* The **`http.server`** module ([doc][http-server-doc]) - HTTP servers
+
+* The **`logging`** module ([doc][logging-doc], [tests][logging-tests]) - Logging facility for Python
+
+* The **`re`** module ([doc][re-doc], [tests][re-tests]) - Regular expression operations
+
+* The **`socket`** module ([doc][socket-doc], [tests][socket-tests]) - low-level networking interface
+  - [Tutorial - Python sockets](https://realpython.com/python-sockets/)
+  - [Unix domain sockets](https://pymotw.com/2/socket/uds.html)
+
+* The **`socketserver`** module ([doc][socketserver-doc], [tests][ast-tests]) - A framework for network servers
+
+* The **`unittest`** module ([doc][unittest-doc]) - Unit testing framework
+
+
+[ast-doc]: https://docs.python.org/3/library/ast.html
+[ast-tests]: ./tests/std_modules/test_module_ast.py
+[http-server-doc]: https://docs.python.org/3/library/http.server.html
+[logging-doc]: https://docs.python.org/3/library/logging.html
+[logging-tests]: ./tests/std_modules/test_module_logging.py
+[re-doc]: https://docs.python.org/3/library/re.html
+[re-tests]: ./tests/std_modules/test_module_re.py
+[socket-doc]: https://docs.python.org/3/library/socket.html
+[socket-tests]: ./tests/std_modules/test_module_socket.py
+[socketserver-doc]: https://docs.python.org/3/library/socketserver.html
+[unittest-doc]: https://docs.python.org/3/library/socketserver.html
+  
+
+Project packaging and setup
+---------------------------
+
+### How do you set up a project again?  What are all of those files for?
+
+- [How To Package Your Python Code](https://python-packaging.readthedocs.io/en/latest/)
+- [Hitchhiker's Guide - Structuring Your Project](https://docs.python-guide.org/writing/structure/)
+- [Python packaging - Past, Present, Future](https://www.bernat.tech/pep-517-518/) (Feb 2019)
+- Example code:
+  - https://github.com/pypa/sampleproject
+  - https://github.com/navdeep-G/samplemod
+
+### Files:
+
+* [**`.gitignore`**][git-ignore-example]: Lots of examples of temporary and build files generated
+  during the software lifecycle.
+* [**`LICENSE`** (ASL-2)](https://www.apache.org/licenses/LICENSE-2.0): How you want your software 
+  used and distributed. _See also setup.py_
+* [**`MANIFEST.in`**][manifest-in-spec]: Files included in the source distribution
+* **`README.md`**: This file, used in github but also in the distributed package.
+* [**`setup.py`**][setup-py-spec] : Build python projects.
+* [**`tox.ini`**][tox-ini-spec] : Used for coordinating builds and tests with tox.
+
+[git-ignore-example]: https://raw.githubusercontent.com/github/gitignore/master/Python.gitignore
+[manifest-in-spec]: https://packaging.python.org/guides/using-manifest-in/
+[setup-py-spec]: https://setuptools.readthedocs.io/en/latest/
+[tox-ini-spec]: https://tox.readthedocs.io/en/latest/example/basic.html#a-simple-tox-ini-default-environments
+
+
