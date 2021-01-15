@@ -1,8 +1,11 @@
-My Python Scripts
-=================
+The Python Enchiridion
+======================
 
-Automate my world! 
+![Python Server CI](https://github.com/RyanSkraba/python-enchiridion/workflows/Python%20Server%20CI/badge.svg)
 
+_[**Enchiridion**](https://en.wikipedia.org/wiki/Enchiridion): **A small manual or handbook.**_  It's a bit like a tech [cook book](https://www.oreilly.com/search/?query=cookbook), but a bigger, fancier, SEO-optimizabler word.
+
+Links to python resources, examples, setup and temporary scripts.
 
 Building and running
 --------------------
