@@ -23,8 +23,9 @@ import socket
 import threading
 import time
 import unittest
-from typing import Optional
+from typing import List, Optional
 
+"""Tests for sockets with Python"""
 
 class EchoBytesServer(object):
     """A server that returns the bytes it receives.  Sending a 0 stops the server."""
@@ -99,7 +100,7 @@ class EchoBytesClient(object):
     def __exit__(self, t, v, tb):
         self.connection.close()
 
-    def send(self, data: Optional[list[int]]) -> bytes:
+    def send(self, data: Optional[List[int]]) -> bytes:
         if data is not None:
             self.connection.sendall(bytes(data))
         return self.connection.recv(1)
