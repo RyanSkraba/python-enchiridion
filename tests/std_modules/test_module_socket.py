@@ -43,7 +43,7 @@ class EchoBytesServer(object):
         self.client_count = 0
         self.host = host
         self.port = port
-        # When this word has been recieved, shutdown the server.
+        # When this word has been received, shutdown the server.
         self.stopword = stopword
         self.timeout = timeout
         self.__exception = None
@@ -64,7 +64,7 @@ class EchoBytesServer(object):
         try:
             self.run()
         except Exception as e:
-            self.exception = e
+            self.__exception = e
 
     def run(self) -> None:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
