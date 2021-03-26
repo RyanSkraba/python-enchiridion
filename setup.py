@@ -38,7 +38,7 @@ setup(
     license="ASL",
     packages=["scanscan"],
     scripts=["bin/hello-world"],
-    install_requires=["avro==1.10.1", "docopt==0.6.2"],
+    install_requires=["avro==1.10.2", "docopt==0.6.2"],
     classifiers=[
         "Development Status :: 3 - Alpha",
         "License :: OSI Approved :: Apache Software License",
