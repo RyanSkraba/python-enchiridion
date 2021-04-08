@@ -144,6 +144,7 @@ Project packaging and setup
 - Example code:
   - https://github.com/pypa/sampleproject
   - https://github.com/navdeep-G/samplemod
+- [How to make an awesome Python package in 2021](https://antonz.org/python-packaging/)
 
 ### Files:
 
