@@ -162,4 +162,30 @@ Project packaging and setup
 [setup-py-spec]: https://setuptools.readthedocs.io/en/latest/
 [tox-ini-spec]: https://tox.readthedocs.io/en/latest/example/basic.html#a-simple-tox-ini-default-environments
 
+### PyPI (the Python package index)
 
+* [Package index mirrors and caches](https://packaging.python.org/guides/index-mirrors-and-caches/)
+
+You can create a PyPI mirror like this:
+
+```bash
+# In one virtual env, download a package and put it in the mirror.
+pip install piprepo
+pip download --destination-directory /tmp/cache avro-python3==1.9.2 # Fails
+pip download --destination-directory /tmp/cache avro-python3==1.9.2.1 
+pip download --destination-directory /tmp/cache avro-python3==1.10.0 
+pip download --destination-directory /tmp/cache avro-python3==1.10.1 
+pip download --destination-directory /tmp/cache avro-python3==1.10.2 
+pip download --destination-directory /tmp/cache avro-python3
+pip download --destination-directory /tmp/cache wheel
+pip download --destination-directory /tmp/cache pycodestyle
+piprepo build /tmp/cache/
+# The directory is now a cache of all the Avro packages
+
+# In any other virtualenv, use the mirror.
+pip install -i file:///tmp/cache/simple --force-reinstall avro-python3
+
+# Or use a docker to isolate the installation.
+docker run -it -v /tmp/cache/:/tmp/cache --network none python:3 \
+    pip install -i file:///tmp/cache/simple --force-reinstall avro-python3
+```
