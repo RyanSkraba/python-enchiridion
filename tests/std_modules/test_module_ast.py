@@ -49,6 +49,21 @@ import os
 output = "Hello %s from %s" % (input, os.name)
 """
 
+CODE_OSNAME_AS = """\
+import os as myos
+output = "Hello %s from %s" % (input, myos.name)
+"""
+
+CODE_OSNAME_FROM = """\
+from os import name
+output = "Hello %s from %s" % (input, name)
+"""
+
+CODE_OSNAME_FROM_AS = """\
+from os import name as myname
+output = "Hello %s from %s" % (input, myname)
+"""
+
 LAMBDA_SUM = """\
 input[0] + input[1]
 """
@@ -101,9 +116,9 @@ def udfize_def(input: str, glbCtx: dict = None, lclCtx: dict = None):
 class UdfSecurityChecker(ast.NodeVisitor):
     def __init__(self):
         self.log = logging.getLogger(__name__)
-        self.usesDoubleUnderscore = False
-        self.ximport = []
-        self.ximportfrom = []
+        self.uses_double_underscore = False
+        # All of the modules imported by the code
+        self.modules = set()
 
     def generic_visit(self, node: ast.AST) -> Any:
         self.log.debug("AST: %s", node)
@@ -111,23 +126,20 @@ class UdfSecurityChecker(ast.NodeVisitor):
 
     def visit_Attribute(self, node: ast.Attribute) -> Any:
         if node.attr.startswith("__"):
-            self.usesDoubleUnderscore = True
+            self.uses_double_underscore = True
         self.generic_visit(node)
 
     def visit_Import(self, node: ast.Import) -> Any:
         for alias in node.names:
-            self.ximport.append(alias.name)
+            self.modules.add(alias.name)
             self.log.debug("IMPORTING: %s", alias.name)
         self.generic_visit(node)
 
     def visit_ImportFrom(self, node: ast.ImportFrom) -> Any:
+        self.modules.add(node.module)
         for alias in node.names:
-            self.ximportfrom.append(alias.name)
-            self.log.debug("IMPORTING FROM: %s", alias.name)
+            self.log.debug("IMPORTING FROM: %s.%s", node.module, alias.name)
         self.generic_visit(node)
-
-    def is_probably_valid(self) -> bool:
-        return not self.usesDoubleUnderscore
 
 
 class AstModuleTestSuite(unittest.TestCase):
@@ -205,7 +217,13 @@ class AstModuleTestSuite(unittest.TestCase):
 
     def test_exec_osname_udfize(self):
         udf = udfize_def(CODE_OSNAME)
-        self.assertEqual(udf("World"), "Hello World from posix")
+        self.assertEqual(udf("World1"), "Hello World1 from posix")
+        udf = udfize_def(CODE_OSNAME_AS)
+        self.assertEqual(udf("World2"), "Hello World2 from posix")
+        udf = udfize_def(CODE_OSNAME_FROM)
+        self.assertEqual(udf("World3"), "Hello World3 from posix")
+        udf = udfize_def(CODE_OSNAME_FROM_AS)
+        self.assertEqual(udf("World4"), "Hello World4 from posix")
 
     def test_exec_sum_udfize_with_no_builtins(self):
         udf = udfize_def(CODE_SUM, glbCtx=GLOBALS_NO_BUILTINS)
@@ -279,12 +297,24 @@ class AstModuleTestSuite(unittest.TestCase):
         udf = udfize_lambda(LAMBDA_OSNAME)
         self.assertEqual(udf("World"), "Hello World from posix")
 
-    def test_scan_ast(self):
+    def test_scan_ast_code_osname(self):
+        for code in [CODE_OSNAME, CODE_OSNAME_AS]:
+            finder = UdfSecurityChecker()
+            finder.visit(ast.parse(code, "<string>", "exec"))
+            self.assertEqual(finder.modules, {"os"})
+            self.assertFalse(finder.uses_double_underscore)
+        for code in [CODE_OSNAME_FROM, CODE_OSNAME_FROM_AS]:
+            finder = UdfSecurityChecker()
+            finder.visit(ast.parse(code, "<string>", "exec"))
+            self.assertEqual(finder.modules, {"os"})
+            self.assertFalse(finder.uses_double_underscore)
+
+    def test_scan_ast_lambda_osname(self):
         finder = UdfSecurityChecker()
         finder.visit(ast.parse(LAMBDA_OSNAME, "<string>", "exec"))
-        self.assertEqual(finder.ximport, [])
-        self.assertEqual(finder.ximportfrom, [])
-        self.assertTrue(finder.is_probably_valid())
+        # It's imported via __imports__
+        self.assertEqual(finder.modules, set())
+        self.assertFalse(finder.uses_double_underscore)
 
 
 if __name__ == "__main__":
