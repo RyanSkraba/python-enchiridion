@@ -19,8 +19,8 @@
 # limitations under the License.
 import ast
 import logging
-import unittest
 import sys
+import unittest
 from typing import Any
 
 GLOBALS_NO_BUILTINS = {"__builtins__": None}
@@ -127,6 +127,13 @@ class UdfSecurityChecker(ast.NodeVisitor):
     def visit_Attribute(self, node: ast.Attribute) -> Any:
         if node.attr.startswith("__"):
             self.uses_double_underscore = True
+        self.generic_visit(node)
+
+    def visit_Call(self, node: ast.Call) -> Any:
+        if isinstance(node.func, ast.Name) and node.func.id == "__import__" and len(node.args) > 0:
+            module = node.args[0]
+            if isinstance(module, ast.Constant):
+                self.modules.add(module.value)
         self.generic_visit(node)
 
     def visit_Import(self, node: ast.Import) -> Any:
@@ -313,7 +320,7 @@ class AstModuleTestSuite(unittest.TestCase):
         finder = UdfSecurityChecker()
         finder.visit(ast.parse(LAMBDA_OSNAME, "<string>", "exec"))
         # It's imported via __imports__
-        self.assertEqual(finder.modules, set())
+        self.assertEqual(finder.modules, {"os"})
         self.assertFalse(finder.uses_double_underscore)
 
 
