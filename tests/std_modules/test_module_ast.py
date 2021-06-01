@@ -130,7 +130,11 @@ class UdfSecurityChecker(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_Call(self, node: ast.Call) -> Any:
-        if isinstance(node.func, ast.Name) and node.func.id == "__import__" and len(node.args) > 0:
+        if (
+            isinstance(node.func, ast.Name)
+            and node.func.id == "__import__"
+            and len(node.args) > 0
+        ):
             module = node.args[0]
             if isinstance(module, ast.Constant):
                 self.modules.add(module.value)
