@@ -64,6 +64,11 @@ from os import name as myname
 output = "Hello %s from %s" % (input, myname)
 """
 
+CODE_OSNAME_IMPORT = """\
+os = __import__('os')
+output = "Hello %s from %s" % (input, os.name)
+"""
+
 LAMBDA_SUM = """\
 input[0] + input[1]
 """
@@ -237,6 +242,8 @@ class AstModuleTestSuite(unittest.TestCase):
         self.assertEqual(udf("World3"), "Hello World3 from posix")
         udf = udfize_def(CODE_OSNAME_FROM_AS)
         self.assertEqual(udf("World4"), "Hello World4 from posix")
+        udf = udfize_def(CODE_OSNAME_IMPORT)
+        self.assertEqual(udf("World5"), "Hello World5 from posix")
 
     def test_exec_sum_udfize_with_no_builtins(self):
         udf = udfize_def(CODE_SUM, glbCtx=GLOBALS_NO_BUILTINS)
