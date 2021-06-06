@@ -44,6 +44,16 @@ CODE_SUM = """\
 output = input[0] + input[1]
 """
 
+CODE_EVAL = """\
+output = eval("input[0] + input[1]")
+"""
+
+CODE_COMPILE_EVAL = """\
+fn_ast = compile("lambda x: (x[0] + x[1])", "<string>", "eval")
+fn = eval(fn_ast)
+output = fn(input)
+"""
+
 CODE_OSNAME = """\
 import os
 output = "Hello %s from %s" % (input, os.name)
@@ -68,6 +78,7 @@ CODE_OSNAME_IMPORT = """\
 os = __import__('os')
 output = "Hello %s from %s" % (input, os.name)
 """
+
 
 LAMBDA_SUM = """\
 input[0] + input[1]
@@ -232,6 +243,12 @@ class AstModuleTestSuite(unittest.TestCase):
         udf = udfize_def(CODE_SUM)
         self.assertEqual(udf([100, 23]), 123)
         self.assertEqual(udf([100, 23000]), 23100)
+        udf = udfize_def(CODE_EVAL)
+        self.assertEqual(udf([100, 24]), 124)
+        self.assertEqual(udf([100, 24000]), 24100)
+        udf = udfize_def(CODE_COMPILE_EVAL)
+        self.assertEqual(udf([100, 25]), 125)
+        self.assertEqual(udf([100, 25000]), 25100)
 
     def test_exec_osname_udfize(self):
         udf = udfize_def(CODE_OSNAME)
