@@ -79,6 +79,11 @@ os = __import__('os')
 output = "Hello %s from %s" % (input, os.name)
 """
 
+CODE_OSNAME_IMPORT_INDIRECT = """\
+module_os = "os"
+os = __import__(module_os)
+output = "Hello %s from %s" % (input, os.name)
+"""
 
 LAMBDA_SUM = """\
 input[0] + input[1]
@@ -261,6 +266,8 @@ class AstModuleTestSuite(unittest.TestCase):
         self.assertEqual(udf("World4"), "Hello World4 from posix")
         udf = udfize_def(CODE_OSNAME_IMPORT)
         self.assertEqual(udf("World5"), "Hello World5 from posix")
+        udf = udfize_def(CODE_OSNAME_IMPORT_INDIRECT)
+        self.assertEqual(udf("World6"), "Hello World6 from posix")
 
     def test_exec_sum_udfize_with_no_builtins(self):
         udf = udfize_def(CODE_SUM, glbCtx=GLOBALS_NO_BUILTINS)
@@ -344,6 +351,17 @@ class AstModuleTestSuite(unittest.TestCase):
             finder = UdfSecurityChecker()
             finder.visit(ast.parse(code, "<string>", "exec"))
             self.assertEqual(finder.modules, {"os"})
+            self.assertFalse(finder.uses_double_underscore)
+        for code in [CODE_OSNAME_IMPORT]:
+            finder = UdfSecurityChecker()
+            finder.visit(ast.parse(code, "<string>", "exec"))
+            self.assertEqual(finder.modules, {"os"})
+            self.assertFalse(finder.uses_double_underscore)
+        for code in [CODE_OSNAME_IMPORT_INDIRECT]:
+            finder = UdfSecurityChecker()
+            finder.visit(ast.parse(code, "<string>", "exec"))
+            # It can't find the import name since it's a variable, not a constant.
+            self.assertEqual(finder.modules, set())
             self.assertFalse(finder.uses_double_underscore)
 
     def test_scan_ast_lambda_osname(self):
