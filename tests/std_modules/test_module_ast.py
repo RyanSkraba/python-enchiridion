@@ -151,6 +151,8 @@ class UdfSecurityChecker(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_Call(self, node: ast.Call) -> Any:
+        if isinstance(node.func, ast.Name) and node.func.id.startswith("__"):
+            self.uses_double_underscore = True
         if (
             isinstance(node.func, ast.Name)
             and node.func.id == "__import__"
@@ -356,20 +358,20 @@ class AstModuleTestSuite(unittest.TestCase):
             finder = UdfSecurityChecker()
             finder.visit(ast.parse(code, "<string>", "exec"))
             self.assertEqual(finder.modules, {"os"})
-            self.assertFalse(finder.uses_double_underscore)
+            self.assertTrue(finder.uses_double_underscore)
         for code in [CODE_OSNAME_IMPORT_INDIRECT]:
             finder = UdfSecurityChecker()
             finder.visit(ast.parse(code, "<string>", "exec"))
             # It can't find the import name since it's a variable, not a constant.
             self.assertEqual(finder.modules, set())
-            self.assertFalse(finder.uses_double_underscore)
+            self.assertTrue(finder.uses_double_underscore)
 
     def test_scan_ast_lambda_osname(self):
         finder = UdfSecurityChecker()
         finder.visit(ast.parse(LAMBDA_OSNAME, "<string>", "exec"))
         # It's imported via __imports__
         self.assertEqual(finder.modules, {"os"})
-        self.assertFalse(finder.uses_double_underscore)
+        self.assertTrue(finder.uses_double_underscore)
 
 
 if __name__ == "__main__":
