@@ -85,6 +85,19 @@ os = __import__(module_os)
 output = "Hello %s from %s" % (input, os.name)
 """
 
+CODE_OSNAME_BUILTINS = """\
+output = "Hello %s from %s" % (input, __builtins__['__import__']("os").name)
+"""
+
+CODE_OSNAME_BUILTINS_IMPORT = """\
+output = "Hello %s from %s" % (input, __builtins__["__import__"]("os").name)
+"""
+
+CODE_OSNAME_BUILTINS_MODULE = """\
+import builtins
+output = "Hello %s from %s" % (input, builtins.__dict__['__import__']("os").name)
+"""
+
 LAMBDA_SUM = """\
 input[0] + input[1]
 """
@@ -270,6 +283,12 @@ class AstModuleTestSuite(unittest.TestCase):
         self.assertEqual(udf("World5"), "Hello World5 from posix")
         udf = udfize_def(CODE_OSNAME_IMPORT_INDIRECT)
         self.assertEqual(udf("World6"), "Hello World6 from posix")
+        udf = udfize_def(CODE_OSNAME_BUILTINS)
+        self.assertEqual(udf("World7"), "Hello World7 from posix")
+        udf = udfize_def(CODE_OSNAME_BUILTINS_IMPORT)
+        self.assertEqual(udf("World8"), "Hello World8 from posix")
+        udf = udfize_def(CODE_OSNAME_BUILTINS_MODULE)
+        self.assertEqual(udf("World9"), "Hello World9 from posix")
 
     def test_exec_sum_udfize_with_no_builtins(self):
         udf = udfize_def(CODE_SUM, glbCtx=GLOBALS_NO_BUILTINS)
