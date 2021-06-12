@@ -54,6 +54,12 @@ fn = eval(fn_ast)
 output = fn(input)
 """
 
+CODE_EXEC = """\
+return_values = {"num": input}
+exec("sum = num[0] + num[1]", None, return_values)
+output = return_values["sum"]
+"""
+
 CODE_OSNAME = """\
 import os
 output = "Hello %s from %s" % (input, os.name)
@@ -269,6 +275,9 @@ class AstModuleTestSuite(unittest.TestCase):
         udf = udfize_def(CODE_COMPILE_EVAL)
         self.assertEqual(udf([100, 25]), 125)
         self.assertEqual(udf([100, 25000]), 25100)
+        udf = udfize_def(CODE_EXEC)
+        self.assertEqual(udf([100, 26]), 126)
+        self.assertEqual(udf([100, 26000]), 26100)
 
     def test_exec_osname_udfize(self):
         udf = udfize_def(CODE_OSNAME)
