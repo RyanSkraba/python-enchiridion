@@ -144,7 +144,8 @@ output = [cls.__name__ for cls in MyClass.__subclasses__()]
 class AstScanner(ast.NodeVisitor):
     def __init__(self):
         self.log = logging.getLogger(__name__)
-        self.uses_double_underscore = False
+        # All of the __special__ methods and attributes used.
+        self.double_underscore = set()
         # All of the modules imported by the code
         self.modules = set()
 
@@ -154,12 +155,12 @@ class AstScanner(ast.NodeVisitor):
 
     def visit_Attribute(self, node: ast.Attribute) -> Any:
         if node.attr.startswith("__"):
-            self.uses_double_underscore = True
+            self.double_underscore.add(node.attr)
         self.generic_visit(node)
 
     def visit_Call(self, node: ast.Call) -> Any:
         if isinstance(node.func, ast.Name) and node.func.id.startswith("__"):
-            self.uses_double_underscore = True
+            self.double_underscore.add(node.func.id)
         if (
             isinstance(node.func, ast.Name)
             and node.func.id == "__import__"
@@ -423,30 +424,30 @@ class AstModuleTestSuite(unittest.TestCase):
             finder = AstScanner()
             finder.visit(ast.parse(code, "<string>", "exec"))
             self.assertEqual(finder.modules, {"os"})
-            self.assertFalse(finder.uses_double_underscore)
+            self.assertEqual(finder.double_underscore, set())
         for code in [CODE_OSNAME_FROM, CODE_OSNAME_FROM_AS]:
             finder = AstScanner()
             finder.visit(ast.parse(code, "<string>", "exec"))
             self.assertEqual(finder.modules, {"os"})
-            self.assertFalse(finder.uses_double_underscore)
+            self.assertEqual(finder.double_underscore, set())
         for code in [CODE_OSNAME_IMPORT]:
             finder = AstScanner()
             finder.visit(ast.parse(code, "<string>", "exec"))
             self.assertEqual(finder.modules, {"os"})
-            self.assertTrue(finder.uses_double_underscore)
+            self.assertEqual(finder.double_underscore, {"__import__"})
         for code in [CODE_OSNAME_IMPORT_INDIRECT]:
             finder = AstScanner()
             finder.visit(ast.parse(code, "<string>", "exec"))
             # It can't find the import name since it's a variable, not a constant.
             self.assertEqual(finder.modules, set())
-            self.assertTrue(finder.uses_double_underscore)
+            self.assertEqual(finder.double_underscore, {"__import__"})
 
     def test_scan_ast_lambda_osname(self):
         finder = AstScanner()
         finder.visit(ast.parse(LAMBDA_OSNAME, "<string>", "exec"))
         # It's imported via __imports__
         self.assertEqual(finder.modules, {"os"})
-        self.assertTrue(finder.uses_double_underscore)
+        self.assertEqual(finder.double_underscore, {"__import__"})
 
 
 if __name__ == "__main__":
