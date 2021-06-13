@@ -104,12 +104,40 @@ import builtins
 output = "Hello %s from %s" % (input, builtins.__dict__['__import__']("os").name)
 """
 
+CODE_OSNAME_IMPORTLIB_MODULE = """\
+import importlib
+os = importlib.import_module("os")
+output = "Hello %s from %s" % (input, os.name)
+"""
+
 LAMBDA_SUM = """\
 input[0] + input[1]
 """
 
 LAMBDA_OSNAME = """\
 "Hello %s from %s" % (input, __import__('os').name)
+"""
+
+CODE_CLASS = """\
+class MyClass(object): pass
+
+output = MyClass.__class__.__name__
+"""
+
+CODE_BASES = """\
+class MyClass(object): pass
+class MySubClassA(MyClass): pass
+
+output = [cls.__name__ for cls in MySubClassA.__bases__]
+"""
+
+CODE_SUBCLASSES = """\
+class MyClass(object): pass
+class MySubClassA(MyClass): pass
+class MySubClassB(MyClass): pass
+class MySubClassASubClass(MySubClassA): pass
+
+output = [cls.__name__ for cls in MyClass.__subclasses__()]
 """
 
 
@@ -298,6 +326,8 @@ class AstModuleTestSuite(unittest.TestCase):
         self.assertEqual(udf("World8"), "Hello World8 from posix")
         udf = udfize_def(CODE_OSNAME_BUILTINS_MODULE)
         self.assertEqual(udf("World9"), "Hello World9 from posix")
+        udf = udfize_def(CODE_OSNAME_IMPORTLIB_MODULE)
+        self.assertEqual(udf("World10"), "Hello World10 from posix")
 
     def test_exec_sum_udfize_with_no_builtins(self):
         udf = udfize_def(CODE_SUM, glbCtx=GLOBALS_NO_BUILTINS)
@@ -313,6 +343,18 @@ class AstModuleTestSuite(unittest.TestCase):
         else:
             with self.assertRaises(SystemError):
                 udf("World")
+
+    def test_exec_doubleunderscore_class(self):
+        udf = udfize_def(CODE_CLASS)
+        self.assertEqual(udf(None), "type")
+
+    def test_exec_doubleunderscore_bases(self):
+        udf = udfize_def(CODE_BASES)
+        self.assertEqual(udf(None), ["MyClass"])
+
+    def test_exec_doubleunderscore_subclasses(self):
+        udf = udfize_def(CODE_SUBCLASSES)
+        self.assertEqual(udf(None), ["MySubClassA", "MySubClassB"])
 
     def test_exec_with_errors(self):
         # Everything is fine.
