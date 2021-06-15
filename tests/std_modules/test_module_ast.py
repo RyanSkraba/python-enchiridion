@@ -60,6 +60,13 @@ exec("sum = num[0] + num[1]", None, return_values)
 output = return_values["sum"]
 """
 
+CODE_NOT_AN_EVAL = """\
+class MyClass(object):
+  def eval(self, input):
+    return input[0] + input[1]
+output = MyClass().eval(input)
+"""
+
 CODE_OSNAME = """\
 import os
 output = "Hello %s from %s" % (input, os.name)
@@ -146,6 +153,8 @@ class AstScanner(ast.NodeVisitor):
         self.log = logging.getLogger(__name__)
         # All of the __special__ methods and attributes used.
         self.double_underscore = set()
+        # If any eval, compile or exec methods are used.
+        self.eval_methods = set()
         # All of the modules imported by the code
         self.modules = set()
 
@@ -159,8 +168,11 @@ class AstScanner(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_Call(self, node: ast.Call) -> Any:
+        # Capture special variables.
         if isinstance(node.func, ast.Name) and node.func.id.startswith("__"):
             self.double_underscore.add(node.func.id)
+
+        # Capture some dangerous evaluations methods.
         if (
             isinstance(node.func, ast.Name)
             and node.func.id == "__import__"
@@ -171,6 +183,15 @@ class AstScanner(ast.NodeVisitor):
                 self.modules.add(module.value)
             elif isinstance(module, ast.Str):
                 self.modules.add(module.s)
+
+        # Capture some dangerous built-in methods.
+        if isinstance(node.func, ast.Name) and node.func.id in {
+            "eval",
+            "exec",
+            "compile",
+        }:
+            self.eval_methods.add(node.func.id)
+
         self.generic_visit(node)
 
     def visit_Import(self, node: ast.Import) -> Any:
@@ -235,7 +256,7 @@ class AstModuleTestSuite(unittest.TestCase):
     """Basic test cases."""
 
     def test_exec_with_system_globals(self):
-        # Compile the UDF using the system globals
+        """Compile a UDF and insert it into the system globals"""
         self.assertNotIn("udf", globals())
         udf_ast = compile(UDF_DEF_GLOBAL_SUM, "<string>", "exec")
         ret = exec(udf_ast)
@@ -249,6 +270,7 @@ class AstModuleTestSuite(unittest.TestCase):
         del globals()["udf"]
 
     def test_exec_with_user_globals(self):
+        """Compile a UDF and insert it into the user-specified globals"""
         udf_ast = compile(UDF_DEF_GLOBAL_SUM, "<string>", "exec")
         glb_ctx = {}
         exec(udf_ast, glb_ctx)
@@ -269,12 +291,13 @@ class AstModuleTestSuite(unittest.TestCase):
         self.assertEqual(udf(100, 23000), 23100)
 
     def test_exec_with_user_locals(self):
+        """Compile a UDF and insert it into the user-specified locals"""
         udf_ast = compile(UDF_DEF_SUM, "<string>", "exec")
         glb_ctx = {}
         lcl_ctx = {}
         exec(udf_ast, glb_ctx, lcl_ctx)
 
-        # UDF shouldn't be available in any space!
+        # UDF shouldn't be available in any global space, but in the given local context
         self.assertNotIn("udf", globals())
         self.assertNotIn("udf", dir())
         self.assertNotIn("udf", glb_ctx)
@@ -283,14 +306,14 @@ class AstModuleTestSuite(unittest.TestCase):
         self.assertEqual(udf(100, 23), 123)
         self.assertEqual(udf(100, 23000), 23100)
 
-    def test_exec_sum_udfsize_string(self):
+    def test_exec_sum_udfize_string(self):
         udfstr = udfize_def_string(CODE_SUM)
         udf_ast = compile(udfstr, "<string>", "exec")
         glb_ctx = {}
         lcl_ctx = {}
         exec(udf_ast, glb_ctx, lcl_ctx)
 
-        # UDF shouldn't be available in any space!
+        # UDF shouldn't be available in any global space, but in the given local context
         self.assertNotIn("udf", globals())
         self.assertNotIn("udf", dir())
         self.assertNotIn("udf", glb_ctx)
@@ -301,48 +324,99 @@ class AstModuleTestSuite(unittest.TestCase):
 
     def test_exec_sum_udfize(self):
         udf, scan = udfize_def(CODE_SUM)
+        self.assertEqual(scan.double_underscore, set())
+        self.assertEqual(scan.eval_methods, set())
+        self.assertEqual(scan.modules, set())
         self.assertEqual(udf([100, 23]), 123)
-        self.assertEqual(udf([100, 23000]), 23100)
+
         udf, scan = udfize_def(CODE_EVAL)
+        self.assertEqual(scan.double_underscore, set())
+        self.assertEqual(scan.eval_methods, {"eval"})
+        self.assertEqual(scan.modules, set())
         self.assertEqual(udf([100, 24]), 124)
-        self.assertEqual(udf([100, 24000]), 24100)
+
         udf, scan = udfize_def(CODE_COMPILE_EVAL)
+        self.assertEqual(scan.double_underscore, set())
+        self.assertEqual(scan.eval_methods, {"compile", "eval"})
+        self.assertEqual(scan.modules, set())
         self.assertEqual(udf([100, 25]), 125)
-        self.assertEqual(udf([100, 25000]), 25100)
+
         udf, scan = udfize_def(CODE_EXEC)
+        self.assertEqual(scan.double_underscore, set())
+        self.assertEqual(scan.eval_methods, {"exec"})
+        self.assertEqual(scan.modules, set())
         self.assertEqual(udf([100, 26]), 126)
-        self.assertEqual(udf([100, 26000]), 26100)
+
+        udf, scan = udfize_def(CODE_NOT_AN_EVAL)
+        self.assertEqual(scan.double_underscore, set())
+        self.assertEqual(scan.eval_methods, set())
+        self.assertEqual(scan.modules, set())
+        self.assertEqual(udf([100, 27]), 127)
 
     def test_exec_osname_udfize(self):
         udf, scan = udfize_def(CODE_OSNAME)
+        self.assertEqual(scan.modules, {"os"})
+        self.assertEqual(scan.double_underscore, set())
         self.assertEqual(udf("World1"), "Hello World1 from posix")
+
         udf, scan = udfize_def(CODE_OSNAME_AS)
+        self.assertEqual(scan.modules, {"os"})
+        self.assertEqual(scan.double_underscore, set())
         self.assertEqual(udf("World2"), "Hello World2 from posix")
+
         udf, scan = udfize_def(CODE_OSNAME_FROM)
+        self.assertEqual(scan.modules, {"os"})
+        self.assertEqual(scan.double_underscore, set())
         self.assertEqual(udf("World3"), "Hello World3 from posix")
+
         udf, scan = udfize_def(CODE_OSNAME_FROM_AS)
+        self.assertEqual(scan.modules, {"os"})
+        self.assertEqual(scan.double_underscore, set())
         self.assertEqual(udf("World4"), "Hello World4 from posix")
+
         udf, scan = udfize_def(CODE_OSNAME_IMPORT)
+        self.assertEqual(scan.modules, {"os"})
+        self.assertEqual(scan.double_underscore, {"__import__"})
         self.assertEqual(udf("World5"), "Hello World5 from posix")
+
         udf, scan = udfize_def(CODE_OSNAME_IMPORT_INDIRECT)
+        self.assertEqual(scan.modules, set())
+        self.assertEqual(scan.double_underscore, {"__import__"})
         self.assertEqual(udf("World6"), "Hello World6 from posix")
+
         udf, scan = udfize_def(CODE_OSNAME_BUILTINS)
+        self.assertEqual(scan.modules, set())
+        self.assertEqual(scan.double_underscore, set())
         self.assertEqual(udf("World7"), "Hello World7 from posix")
+
         udf, scan = udfize_def(CODE_OSNAME_BUILTINS_IMPORT)
+        self.assertEqual(scan.modules, set())
+        self.assertEqual(scan.double_underscore, set())
         self.assertEqual(udf("World8"), "Hello World8 from posix")
+
         udf, scan = udfize_def(CODE_OSNAME_BUILTINS_MODULE)
+        self.assertEqual(scan.modules, {"builtins"})
+        self.assertEqual(scan.double_underscore, {"__dict__"})
         self.assertEqual(udf("World9"), "Hello World9 from posix")
+
         udf, scan = udfize_def(CODE_OSNAME_IMPORTLIB_MODULE)
+        self.assertEqual(scan.modules, {"importlib"})
+        self.assertEqual(scan.double_underscore, set())
         self.assertEqual(udf("World10"), "Hello World10 from posix")
 
     def test_exec_sum_udfize_with_no_builtins(self):
         udf, scan = udfize_def(CODE_SUM, glb_ctx=GLOBALS_NO_BUILTINS)
+        self.assertEqual(scan.modules, set())
+        self.assertEqual(scan.double_underscore, set())
         self.assertEqual(udf([100, 23]), 123)
         self.assertEqual(udf([100, 23000]), 23100)
 
     def test_exec_osname_udfize_with_no_builtins(self):
         # This generates an error because the import can't be done if the built-ins aren't available
         udf, scan = udfize_def(CODE_OSNAME, glb_ctx=GLOBALS_NO_BUILTINS)
+        self.assertEqual(scan.modules, {"os"})
+        self.assertEqual(scan.double_underscore, set())
+
         if sys.version_info.minor <= 7:
             with self.assertRaises(ImportError):
                 udf("World")
@@ -352,23 +426,33 @@ class AstModuleTestSuite(unittest.TestCase):
 
     def test_exec_doubleunderscore_class(self):
         udf, scan = udfize_def(CODE_CLASS)
+        self.assertEqual(scan.modules, set())
+        self.assertEqual(scan.double_underscore, {"__class__", "__name__"})
         self.assertEqual(udf(None), "type")
 
     def test_exec_doubleunderscore_bases(self):
         udf, scan = udfize_def(CODE_BASES)
+        self.assertEqual(scan.modules, set())
+        self.assertEqual(scan.double_underscore, {"__bases__", "__name__"})
         self.assertEqual(udf(None), ["MyClass"])
 
     def test_exec_doubleunderscore_subclasses(self):
         udf, scan = udfize_def(CODE_SUBCLASSES)
+        self.assertEqual(scan.modules, set())
+        self.assertEqual(scan.double_underscore, {"__name__", "__subclasses__"})
         self.assertEqual(udf(None), ["MySubClassA", "MySubClassB"])
 
     def test_exec_with_errors(self):
         # Everything is fine.
         udf, scan = udfize_def("""output = "Everything is {}!".format(input) """)
+        self.assertEqual(scan.modules, set())
+        self.assertEqual(scan.double_underscore, set())
         self.assertEqual(udf("great!"), "Everything is great!!")
 
         # The parameter is input, not incoming.  The syntax is fine though.
         udf, scan = udfize_def("""output = "Everything is {}!".format(incoming) """)
+        self.assertEqual(scan.modules, set())
+        self.assertEqual(scan.double_underscore, set())
         with self.assertRaises(NameError) as cm:
             udf("broken")
         self.assertEqual(cm.exception.args, ("name 'incoming' is not defined",))
@@ -418,29 +502,6 @@ class AstModuleTestSuite(unittest.TestCase):
     def test_eval_lambda_osname_udfize(self):
         udf = udfize_lambda(LAMBDA_OSNAME)
         self.assertEqual(udf("World"), "Hello World from posix")
-
-    def test_scan_ast_code_osname(self):
-        for code in [CODE_OSNAME, CODE_OSNAME_AS]:
-            finder = AstScanner()
-            finder.visit(ast.parse(code, "<string>", "exec"))
-            self.assertEqual(finder.modules, {"os"})
-            self.assertEqual(finder.double_underscore, set())
-        for code in [CODE_OSNAME_FROM, CODE_OSNAME_FROM_AS]:
-            finder = AstScanner()
-            finder.visit(ast.parse(code, "<string>", "exec"))
-            self.assertEqual(finder.modules, {"os"})
-            self.assertEqual(finder.double_underscore, set())
-        for code in [CODE_OSNAME_IMPORT]:
-            finder = AstScanner()
-            finder.visit(ast.parse(code, "<string>", "exec"))
-            self.assertEqual(finder.modules, {"os"})
-            self.assertEqual(finder.double_underscore, {"__import__"})
-        for code in [CODE_OSNAME_IMPORT_INDIRECT]:
-            finder = AstScanner()
-            finder.visit(ast.parse(code, "<string>", "exec"))
-            # It can't find the import name since it's a variable, not a constant.
-            self.assertEqual(finder.modules, set())
-            self.assertEqual(finder.double_underscore, {"__import__"})
 
     def test_scan_ast_lambda_osname(self):
         finder = AstScanner()
