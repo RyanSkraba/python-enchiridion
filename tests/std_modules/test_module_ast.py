@@ -67,6 +67,11 @@ class MyClass(object):
 output = MyClass().eval(input)
 """
 
+CODE_EVAL_INDIRECT = """\
+not_eval = eval
+output = not_eval("input[0] + input[1]")
+"""
+
 CODE_OSNAME = """\
 import os
 output = "Hello %s from %s" % (input, os.name)
@@ -167,12 +172,23 @@ class AstScanner(ast.NodeVisitor):
             self.double_underscore.add(node.attr)
         self.generic_visit(node)
 
-    def visit_Call(self, node: ast.Call) -> Any:
+    def visit_Name(self, node: ast.Name) -> Any:
         # Capture special variables.
-        if isinstance(node.func, ast.Name) and node.func.id.startswith("__"):
-            self.double_underscore.add(node.func.id)
+        if node.id.startswith("__"):
+            self.double_underscore.add(node.id)
 
-        # Capture some dangerous evaluations methods.
+        # Capture some dangerous built-in methods.
+        if node.id in {
+            "eval",
+            "exec",
+            "compile",
+        }:
+            self.eval_methods.add(node.id)
+
+        self.generic_visit(node)
+
+    def visit_Call(self, node: ast.Call) -> Any:
+        # Capture some imports
         if (
             isinstance(node.func, ast.Name)
             and node.func.id == "__import__"
@@ -183,14 +199,6 @@ class AstScanner(ast.NodeVisitor):
                 self.modules.add(module.value)
             elif isinstance(module, ast.Str):
                 self.modules.add(module.s)
-
-        # Capture some dangerous built-in methods.
-        if isinstance(node.func, ast.Name) and node.func.id in {
-            "eval",
-            "exec",
-            "compile",
-        }:
-            self.eval_methods.add(node.func.id)
 
         self.generic_visit(node)
 
@@ -353,6 +361,12 @@ class AstModuleTestSuite(unittest.TestCase):
         self.assertEqual(scan.modules, set())
         self.assertEqual(udf([100, 27]), 127)
 
+        udf, scan = udfize_def(CODE_EVAL_INDIRECT)
+        self.assertEqual(scan.double_underscore, set())
+        self.assertEqual(scan.eval_methods, {"eval"})
+        self.assertEqual(scan.modules, set())
+        self.assertEqual(udf([100, 28]), 128)
+
     def test_exec_osname_udfize(self):
         udf, scan = udfize_def(CODE_OSNAME)
         self.assertEqual(scan.modules, {"os"})
@@ -386,12 +400,12 @@ class AstModuleTestSuite(unittest.TestCase):
 
         udf, scan = udfize_def(CODE_OSNAME_BUILTINS)
         self.assertEqual(scan.modules, set())
-        self.assertEqual(scan.double_underscore, set())
+        self.assertEqual(scan.double_underscore, {"__builtins__"})
         self.assertEqual(udf("World7"), "Hello World7 from posix")
 
         udf, scan = udfize_def(CODE_OSNAME_BUILTINS_IMPORT)
         self.assertEqual(scan.modules, set())
-        self.assertEqual(scan.double_underscore, set())
+        self.assertEqual(scan.double_underscore, {"__builtins__"})
         self.assertEqual(udf("World8"), "Hello World8 from posix")
 
         udf, scan = udfize_def(CODE_OSNAME_BUILTINS_MODULE)
