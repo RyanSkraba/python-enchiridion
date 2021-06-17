@@ -130,7 +130,7 @@ Standard modules
 [socket-doc]: https://docs.python.org/3/library/socket.html
 [socket-tests]: ./tests/std_modules/test_module_socket.py
 [socketserver-doc]: https://docs.python.org/3/library/socketserver.html
-[unittest-doc]: https://docs.python.org/3/library/socketserver.html
+[unittest-doc]: https://docs.python.org/3/library/unittest.html
   
 
 Project packaging and setup
