@@ -18,16 +18,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import logging
+import sys
 import unittest
 import warnings
 
 
 class UnittestModuleTestSuite(unittest.TestCase):
     def setUp(self):
-        self.running = 1
+        self.running = True
 
     def tearDown(self):
-        self.running = None
+        self.running = False
 
     def test_asserts_equals(self):
         """Simple examples of equality assertions."""
@@ -126,6 +127,23 @@ class UnittestModuleTestSuite(unittest.TestCase):
         self.assertEqual(
             cm.output, ["INFO:unittest:INFO!", "ERROR:unittest.x:ERROR!!!"]
         )
+
+    @unittest.skip("Never run this test")
+    def test_skip(self):
+        self.fail("Skipped -- we shouldn't arrive here")
+
+    @unittest.skipIf(sys.version_info.major > 1, "Only supported for python 1")
+    def test_skip_if(self):
+        self.fail("Skipped -- we shouldn't arrive here")
+
+    @unittest.skipUnless(sys.platform.startswith("DubiOs"), "Requires specific OS")
+    def test_skip_unless(self):
+        self.fail("Skipped -- we shouldn't arrive here")
+
+    def test_skip_internally(self):
+        if self.running:
+            self.skipTest("Skip when running")
+        self.fail("Skipped -- we shouldn't arrive here")
 
 
 if __name__ == "__main__":
