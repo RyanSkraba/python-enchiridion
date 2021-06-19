@@ -130,6 +130,7 @@ class UnittestModuleAssertionsTestSuite(unittest.TestCase):
         )
 
 
+@unittest.skipIf(False, "You can annotate a TestSuite to skip.")
 class UnittestModuleSkipTestSuite(unittest.TestCase):
     """Test cases for skipped tests."""
 
