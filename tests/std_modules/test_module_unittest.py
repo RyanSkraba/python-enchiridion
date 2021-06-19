@@ -23,18 +23,55 @@ import warnings
 
 
 class UnittestModuleTestSuite(unittest.TestCase):
-    def test_asserts(self):
+    def setUp(self):
+        self.running = 1
+
+    def tearDown(self):
+        self.running = None
+
+    def test_asserts_equals(self):
+        """Simple examples of equality assertions."""
+
+        # Boolean expressions
+        self.assertTrue(1 + 1 == 2)
+        self.assertFalse(1 + 1 == 3)
+
+        # Test for equality using `==` and `is`
         self.assertEqual(2, 1 + 1)
         self.assertNotEqual(1, 1 + 1)
+        self.assertIs(2, 1 + 1)
+        self.assertIsNot(1, 1 + 1)
 
+        # Note that IntelliJ gives an error message: Expected 3, Actual 2
+        with self.assertRaises(AssertionError) as cm:
+            self.assertEquals(3, 1 + 1)
+        self.assertEquals(str(cm.exception), "3 != 2")
+        with self.assertRaises(AssertionError) as cm:
+            self.assertIs(3, 1 + 1)
+        self.assertEquals(str(cm.exception), "3 is not 2")
+
+        # All of the asserts can have messages.
+        self.assertIs(2, 1 + 1, msg="Basic arithmetic")
+
+        with self.assertRaises(AssertionError) as cm:
+            self.assertIs(3, 1 + 1, msg="Basic arithmetic")
+        self.assertEquals(str(cm.exception), "3 is not 2 : Basic arithmetic")
+
+    def test_asserts_floating_point(self):
+        """Simple examples of floating point assertions."""
+
+        # Floating point equality
         self.assertAlmostEqual(0.99999999, 1)
         self.assertAlmostEqual(1.0, 1.001, places=2)
         self.assertAlmostEqual(1.0, 1.25, delta=0.3)
-
         self.assertNotAlmostEqual(0.9999999, 1)
         self.assertNotAlmostEqual(1.0, 1.01, places=2)
         self.assertNotAlmostEqual(1.0, 1.35, delta=0.3)
 
+    def test_asserts_collections(self):
+        """Simple examples of collection assertions."""
+
+        # Collections
         self.assertSequenceEqual([1, 2], (1, 1 + 1))
         self.assertListEqual([1, 2], [1, 1 + 1])
         self.assertTupleEqual((1, 2), (1, 1 + 1))
@@ -42,10 +79,11 @@ class UnittestModuleTestSuite(unittest.TestCase):
 
         self.assertIn(1, {1, 2})
         self.assertNotIn(2, {1, 3})
-        self.assertIs(2, 1 + 1)
-        self.assertIsNot(1, 1 + 1)
         self.assertDictEqual({"id": 2}, {"id": 1 + 1})
         self.assertCountEqual([1, 2, 2, 3], [3, 2, 1, 2])
+
+    def test_asserts_others(self):
+        """Simple examples of collection assertions."""
 
         self.assertMultiLineEqual("A\nB", "A\nB")
 
