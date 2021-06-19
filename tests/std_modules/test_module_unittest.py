@@ -23,12 +23,13 @@ import unittest
 import warnings
 
 
-class UnittestModuleTestSuite(unittest.TestCase):
-    def setUp(self):
-        self.running = True
+"""
+Unit tests in Python
+"""
 
-    def tearDown(self):
-        self.running = False
+
+class UnittestModuleAssertionsTestSuite(unittest.TestCase):
+    """Test cases for assertions."""
 
     def test_asserts_equals(self):
         """Simple examples of equality assertions."""
@@ -127,6 +128,16 @@ class UnittestModuleTestSuite(unittest.TestCase):
         self.assertEqual(
             cm.output, ["INFO:unittest:INFO!", "ERROR:unittest.x:ERROR!!!"]
         )
+
+
+class UnittestModuleSkipTestSuite(unittest.TestCase):
+    """Test cases for skipped tests."""
+
+    def setUp(self):
+        self.running = True
+
+    def tearDown(self):
+        self.running = False
 
     @unittest.skip("Never run this test")
     def test_skip(self):
