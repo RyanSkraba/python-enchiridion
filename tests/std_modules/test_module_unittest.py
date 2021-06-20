@@ -103,6 +103,10 @@ class UnittestModuleAssertionsTestSuite(unittest.TestCase):
         self.assertRegex("unittest", "itte")
         self.assertNotRegex("unittest", "utte")
 
+
+class UnittestModuleFailuresTestSuite(unittest.TestCase):
+    """Test cases for exceptions and failures."""
+
     def test_raises(self):
         with self.assertRaises(Exception):
             raise Exception("ERROR!!!")
@@ -128,6 +132,21 @@ class UnittestModuleAssertionsTestSuite(unittest.TestCase):
         self.assertEqual(
             cm.output, ["INFO:unittest:INFO!", "ERROR:unittest.x:ERROR!!!"]
         )
+
+    @unittest.expectedFailure
+    def test_fail(self):
+        self.fail("Always fails.")
+
+    @unittest.expectedFailure
+    def test_bad_assertion(self):
+        self.assertEqual(3, 1 + 1)
+
+
+def skipUnlessYes(confirmation: str = "No"):
+    """A custom annotation that skips only if the confirmation is exactly 'Yes'"""
+    if confirmation != "Yes":
+        return lambda func: func
+    return unittest.skip("Skip requested")
 
 
 @unittest.skipIf(False, "You can annotate a TestSuite to skip.")
@@ -156,6 +175,14 @@ class UnittestModuleSkipTestSuite(unittest.TestCase):
         if self.running:
             self.skipTest("Skip when running")
         self.fail("Skipped -- we shouldn't arrive here")
+
+    @skipUnlessYes("No")
+    def test_not_custom_skipped(self):
+        self.assertEqual(2, 1 + 1)
+
+    @skipUnlessYes("Yes")
+    def test_custom_skipped(self):
+        self.assertEqual(3, 1 + 1)
 
 
 if __name__ == "__main__":
