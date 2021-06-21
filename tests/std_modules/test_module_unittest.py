@@ -153,11 +153,21 @@ def skipUnlessYes(confirmation: str = "No"):
 class UnittestModuleSkipTestSuite(unittest.TestCase):
     """Test cases for skipped tests."""
 
-    def setUp(self):
+    class_running: bool = False
+
+    def setUp(self) -> None:
         self.running = True
 
-    def tearDown(self):
+    def tearDown(self) -> None:
         self.running = False
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.class_running = True
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cls.class_running = False
 
     @unittest.skip("Never run this test")
     def test_skip(self):
@@ -172,7 +182,7 @@ class UnittestModuleSkipTestSuite(unittest.TestCase):
         self.fail("Skipped -- we shouldn't arrive here")
 
     def test_skip_internally(self):
-        if self.running:
+        if self.running and self.class_running:
             self.skipTest("Skip when running")
         self.fail("Skipped -- we shouldn't arrive here")
 
