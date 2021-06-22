@@ -23,7 +23,7 @@ import uuid
 
 
 class UuidModuleTestSuite(unittest.TestCase):
-    def test_match(self):
+    def test_match(self) -> None:
         id = uuid.UUID("12345678-1234-5678-1234-567812345678")
         self.assertEqual(str(id), "12345678-1234-5678-1234-567812345678")
         id2 = uuid.UUID(str(id))

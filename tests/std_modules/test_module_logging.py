@@ -23,7 +23,7 @@ import logging
 
 
 class LoggingModuleTestSuite(unittest.TestCase):
-    def test_logging(self):
+    def test_logging(self) -> None:
         """Using the module functions directly."""
         logging.debug("Something is happening: %s", "Argument")
         logging.info("Something is happening: %s", "Argument")

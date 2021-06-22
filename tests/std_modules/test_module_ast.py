@@ -263,7 +263,7 @@ def udfize_def(
 class AstModuleTestSuite(unittest.TestCase):
     """Basic test cases."""
 
-    def test_exec_with_system_globals(self):
+    def test_exec_with_system_globals(self) -> None:
         """Compile a UDF and insert it into the system globals"""
         self.assertNotIn("udf", globals())
         udf_ast = compile(UDF_DEF_GLOBAL_SUM, "<string>", "exec")
@@ -277,7 +277,7 @@ class AstModuleTestSuite(unittest.TestCase):
         # Clean it up.
         del globals()["udf"]
 
-    def test_exec_with_user_globals(self):
+    def test_exec_with_user_globals(self) -> None:
         """Compile a UDF and insert it into the user-specified globals"""
         udf_ast = compile(UDF_DEF_GLOBAL_SUM, "<string>", "exec")
         glb_ctx = {}
@@ -298,7 +298,7 @@ class AstModuleTestSuite(unittest.TestCase):
         self.assertEqual(udf(100, 23), 123)
         self.assertEqual(udf(100, 23000), 23100)
 
-    def test_exec_with_user_locals(self):
+    def test_exec_with_user_locals(self) -> None:
         """Compile a UDF and insert it into the user-specified locals"""
         udf_ast = compile(UDF_DEF_SUM, "<string>", "exec")
         glb_ctx = {}
@@ -314,7 +314,7 @@ class AstModuleTestSuite(unittest.TestCase):
         self.assertEqual(udf(100, 23), 123)
         self.assertEqual(udf(100, 23000), 23100)
 
-    def test_exec_sum_udfize_string(self):
+    def test_exec_sum_udfize_string(self) -> None:
         udfstr = udfize_def_string(CODE_SUM)
         udf_ast = compile(udfstr, "<string>", "exec")
         glb_ctx = {}
@@ -330,7 +330,7 @@ class AstModuleTestSuite(unittest.TestCase):
         self.assertEqual(udf([100, 23]), 123)
         self.assertEqual(udf([100, 23000]), 23100)
 
-    def test_exec_sum_udfize(self):
+    def test_exec_sum_udfize(self) -> None:
         udf, scan = udfize_def(CODE_SUM)
         self.assertEqual(scan.double_underscore, set())
         self.assertEqual(scan.eval_methods, set())
@@ -367,7 +367,7 @@ class AstModuleTestSuite(unittest.TestCase):
         self.assertEqual(scan.modules, set())
         self.assertEqual(udf([100, 28]), 128)
 
-    def test_exec_osname_udfize(self):
+    def test_exec_osname_udfize(self) -> None:
         udf, scan = udfize_def(CODE_OSNAME)
         self.assertEqual(scan.modules, {"os"})
         self.assertEqual(scan.double_underscore, set())
@@ -418,14 +418,14 @@ class AstModuleTestSuite(unittest.TestCase):
         self.assertEqual(scan.double_underscore, set())
         self.assertEqual(udf("World10"), "Hello World10 from posix")
 
-    def test_exec_sum_udfize_with_no_builtins(self):
+    def test_exec_sum_udfize_with_no_builtins(self) -> None:
         udf, scan = udfize_def(CODE_SUM, glb_ctx=GLOBALS_NO_BUILTINS)
         self.assertEqual(scan.modules, set())
         self.assertEqual(scan.double_underscore, set())
         self.assertEqual(udf([100, 23]), 123)
         self.assertEqual(udf([100, 23000]), 23100)
 
-    def test_exec_osname_udfize_with_no_builtins(self):
+    def test_exec_osname_udfize_with_no_builtins(self) -> None:
         # This generates an error because the import can't be done if the built-ins aren't available
         udf, scan = udfize_def(CODE_OSNAME, glb_ctx=GLOBALS_NO_BUILTINS)
         self.assertEqual(scan.modules, {"os"})
@@ -438,25 +438,25 @@ class AstModuleTestSuite(unittest.TestCase):
             with self.assertRaises(SystemError):
                 udf("World")
 
-    def test_exec_doubleunderscore_class(self):
+    def test_exec_doubleunderscore_class(self) -> None:
         udf, scan = udfize_def(CODE_CLASS)
         self.assertEqual(scan.modules, set())
         self.assertEqual(scan.double_underscore, {"__class__", "__name__"})
         self.assertEqual(udf(None), "type")
 
-    def test_exec_doubleunderscore_bases(self):
+    def test_exec_doubleunderscore_bases(self) -> None:
         udf, scan = udfize_def(CODE_BASES)
         self.assertEqual(scan.modules, set())
         self.assertEqual(scan.double_underscore, {"__bases__", "__name__"})
         self.assertEqual(udf(None), ["MyClass"])
 
-    def test_exec_doubleunderscore_subclasses(self):
+    def test_exec_doubleunderscore_subclasses(self) -> None:
         udf, scan = udfize_def(CODE_SUBCLASSES)
         self.assertEqual(scan.modules, set())
         self.assertEqual(scan.double_underscore, {"__name__", "__subclasses__"})
         self.assertEqual(udf(None), ["MySubClassA", "MySubClassB"])
 
-    def test_exec_with_errors(self):
+    def test_exec_with_errors(self) -> None:
         # Everything is fine.
         udf, scan = udfize_def("""output = "Everything is {}!".format(input) """)
         self.assertEqual(scan.modules, set())
@@ -508,16 +508,16 @@ class AstModuleTestSuite(unittest.TestCase):
 
         print(cm.exception.__traceback__)
 
-    def test_eval_lambda_sum_udfize(self):
+    def test_eval_lambda_sum_udfize(self) -> None:
         udf = udfize_lambda(LAMBDA_SUM)
         self.assertEqual(udf([100, 23]), 123)
         self.assertEqual(udf([100, 23000]), 23100)
 
-    def test_eval_lambda_osname_udfize(self):
+    def test_eval_lambda_osname_udfize(self) -> None:
         udf = udfize_lambda(LAMBDA_OSNAME)
         self.assertEqual(udf("World"), "Hello World from posix")
 
-    def test_scan_ast_lambda_osname(self):
+    def test_scan_ast_lambda_osname(self) -> None:
         finder = AstScanner()
         finder.visit(ast.parse(LAMBDA_OSNAME, "<string>", "exec"))
         # It's imported via __imports__

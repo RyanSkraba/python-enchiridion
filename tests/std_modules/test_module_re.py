@@ -23,7 +23,7 @@ import re
 
 
 class ReModuleTestSuite(unittest.TestCase):
-    def test_match(self):
+    def test_match(self) -> None:
         regex = re.compile("ab*c")
 
         # matches the beginning of the string.

@@ -156,7 +156,7 @@ class EchoBytesClient(object):
 
 
 class SocketModuleTestSuite(unittest.TestCase):
-    def test_echo_bytes_server_basic(self):
+    def test_echo_bytes_server_basic(self) -> None:
 
         """Simple client/server communication with the server and client."""
         with EchoBytesServer(timeout=10) as srv:
@@ -188,7 +188,7 @@ class SocketModuleTestSuite(unittest.TestCase):
 
             self.assertEqual(3, srv.client_count)
 
-    def test_accept_timeout(self):
+    def test_accept_timeout(self) -> None:
         """A socket.accept call blocks, but can time out."""
 
         info = {}
