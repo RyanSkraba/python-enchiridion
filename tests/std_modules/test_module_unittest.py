@@ -31,7 +31,7 @@ Unit tests in Python
 class UnittestModuleAssertionsTestSuite(unittest.TestCase):
     """Test cases for assertions."""
 
-    def test_asserts_equals(self):
+    def test_asserts_equals(self) -> None:
         """Simple examples of equality assertions."""
 
         # Boolean expressions
@@ -59,7 +59,7 @@ class UnittestModuleAssertionsTestSuite(unittest.TestCase):
             self.assertIs(3, 1 + 1, msg="Basic arithmetic")
         self.assertEquals(str(cm.exception), "3 is not 2 : Basic arithmetic")
 
-    def test_asserts_floating_point(self):
+    def test_asserts_floating_point(self) -> None:
         """Simple examples of floating point assertions."""
 
         # Floating point equality
@@ -70,7 +70,7 @@ class UnittestModuleAssertionsTestSuite(unittest.TestCase):
         self.assertNotAlmostEqual(1.0, 1.01, places=2)
         self.assertNotAlmostEqual(1.0, 1.35, delta=0.3)
 
-    def test_asserts_collections(self):
+    def test_asserts_collections(self) -> None:
         """Simple examples of collection assertions."""
 
         # Collections
@@ -84,7 +84,7 @@ class UnittestModuleAssertionsTestSuite(unittest.TestCase):
         self.assertDictEqual({"id": 2}, {"id": 1 + 1})
         self.assertCountEqual([1, 2, 2, 3], [3, 2, 1, 2])
 
-    def test_asserts_others(self):
+    def test_asserts_others(self) -> None:
         """Simple examples of collection assertions."""
 
         self.assertMultiLineEqual("A\nB", "A\nB")
@@ -107,7 +107,7 @@ class UnittestModuleAssertionsTestSuite(unittest.TestCase):
 class UnittestModuleFailuresTestSuite(unittest.TestCase):
     """Test cases for exceptions and failures."""
 
-    def test_raises(self):
+    def test_raises(self) -> None:
         with self.assertRaises(Exception):
             raise Exception("ERROR!!!")
 
@@ -124,8 +124,7 @@ class UnittestModuleFailuresTestSuite(unittest.TestCase):
         with self.assertWarnsRegex(Warning, "WARNING"):
             warnings.warn("WARNING!!")
 
-    def test_logger(self):
-
+    def test_logger(self) -> None:
         with self.assertLogs("unittest", level="INFO") as cm:
             logging.getLogger("unittest").info("INFO!")
             logging.getLogger("unittest.x").error("ERROR!!!")
@@ -134,11 +133,11 @@ class UnittestModuleFailuresTestSuite(unittest.TestCase):
         )
 
     @unittest.expectedFailure
-    def test_fail(self):
+    def test_fail(self) -> None:
         self.fail("Always fails.")
 
     @unittest.expectedFailure
-    def test_bad_assertion(self):
+    def test_bad_assertion(self) -> None:
         self.assertEqual(3, 1 + 1)
 
 
@@ -170,28 +169,28 @@ class UnittestModuleSkipTestSuite(unittest.TestCase):
         cls.class_running = False
 
     @unittest.skip("Never run this test")
-    def test_skip(self):
+    def test_skip(self) -> None:
         self.fail("Skipped -- we shouldn't arrive here")
 
     @unittest.skipIf(sys.version_info.major > 1, "Only supported for python 1")
-    def test_skip_if(self):
+    def test_skip_if(self) -> None:
         self.fail("Skipped -- we shouldn't arrive here")
 
     @unittest.skipUnless(sys.platform.startswith("DubiOs"), "Requires specific OS")
-    def test_skip_unless(self):
+    def test_skip_unless(self) -> None:
         self.fail("Skipped -- we shouldn't arrive here")
 
-    def test_skip_internally(self):
+    def test_skip_internally(self) -> None:
         if self.running and self.class_running:
             self.skipTest("Skip when running")
         self.fail("Skipped -- we shouldn't arrive here")
 
     @skipUnlessYes("No")
-    def test_not_custom_skipped(self):
+    def test_not_custom_skipped(self) -> None:
         self.assertEqual(2, 1 + 1)
 
     @skipUnlessYes("Yes")
-    def test_custom_skipped(self):
+    def test_custom_skipped(self) -> None:
         self.assertEqual(3, 1 + 1)
 
 
