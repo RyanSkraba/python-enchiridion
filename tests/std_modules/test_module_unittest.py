@@ -22,7 +22,6 @@ import sys
 import unittest
 import warnings
 
-
 """
 Unit tests in Python
 """
@@ -103,11 +102,19 @@ class UnittestModuleAssertionsTestSuite(unittest.TestCase):
         self.assertRegex("unittest", "itte")
         self.assertNotRegex("unittest", "utte")
 
+    def test_subtest(self) -> None:
+        """Subtests can be used to parameterize tests."""
+        for num in ["One", "Two", "Six", "Ten"]:
+            with self.subTest(num=num):
+                # Each success and failure is reported.
+                self.assertEqual(3, len(num))
+
 
 class UnittestModuleFailuresTestSuite(unittest.TestCase):
     """Test cases for exceptions and failures."""
 
     def test_raises(self) -> None:
+        """Simple examples of collection assertions."""
         with self.assertRaises(Exception):
             raise Exception("ERROR!!!")
 
