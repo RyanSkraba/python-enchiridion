@@ -38,7 +38,6 @@ hello-world                 # prints Hello, World!
 hello-world --name=comrade  # prints Hello, comrade!
 ```
 
-
 Testing and automation
 ----------------------
 
@@ -86,12 +85,19 @@ Running in docker
 docker run -it --volume $PWD:/opt/workdir --workdir /opt/workdir python:3.6 bash
 ```
 
-Best practices
+Syntax and best practices
 --------------
 
-* [PEP 8 -- Style Guide for Python Code](https://www.python.org/dev/peps/pep-0008/)
-* [PEP 257 -- Docstring Conventions](https://www.python.org/dev/peps/pep-0257/)
-* [PEP 440 -- Version Identification and Dependency Specification](https://www.python.org/dev/peps/pep-0440/)
+* Object-oriented programming
+  - [Language Reference - Data Model](https://docs.python.org/3/reference/datamodel.html)
+  - [Python in a Nutshell - Object oriented](https://www.oreilly.com/library/view/python-in-a/9781491913833/ch04.html)
+  - [Understanding Object Instantiation and Metaclasses in Python](https://www.honeybadger.io/blog/python-instantiation-metaclass/)
+
+* PEP
+  - [PEP 8 -- Style Guide for Python Code](https://www.python.org/dev/peps/pep-0008/)
+  - [PEP 257 -- Docstring Conventions](https://www.python.org/dev/peps/pep-0257/)
+  - [PEP 440 -- Version Identification and Dependency Specification](https://www.python.org/dev/peps/pep-0440/)
+
 
 Standard modules
 ----------------
