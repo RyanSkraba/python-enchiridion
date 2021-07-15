@@ -1,5 +1,5 @@
 The Python Enchiridion
-======================
+==============================================================================
 
 ![Python Server CI](https://github.com/RyanSkraba/python-enchiridion/workflows/Python%20Server%20CI/badge.svg)
 
@@ -8,7 +8,7 @@ _[**Enchiridion**](https://en.wikipedia.org/wiki/Enchiridion): **A small manual 
 Links to python resources, examples, setup and temporary scripts.
 
 Building and running
---------------------
+------------------------------------------------------------------------------
 
 ```bash
 # Setting up and using virtualenv.
@@ -39,7 +39,7 @@ hello-world --name=comrade  # prints Hello, comrade!
 ```
 
 Testing and automation
-----------------------
+------------------------------------------------------------------------------
 
 ### [Black](https://black.readthedocs.io/en/stable/): The uncompromising code formatter
 
@@ -72,21 +72,21 @@ tox
 ```
 
 IntelliJ setup
---------------
+------------------------------------------------------------------------------
 
 * IntelliJ
   - [Using the Python plugin](https://www.jetbrains.com/help/idea/plugin-overview.html#63317)
   - Set up a Python SDK virtualenv in `$PROJECT/env`
 
 Running in docker
------------------
+------------------------------------------------------------------------------
 
 ```bash
 docker run -it --volume $PWD:/opt/workdir --workdir /opt/workdir python:3.6 bash
 ```
 
 Syntax and best practices
---------------
+------------------------------------------------------------------------------
 
 * Object-oriented programming
   - [Language Reference - Data Model](https://docs.python.org/3/reference/datamodel.html)
@@ -98,9 +98,8 @@ Syntax and best practices
   - [PEP 257 -- Docstring Conventions](https://www.python.org/dev/peps/pep-0257/)
   - [PEP 440 -- Version Identification and Dependency Specification](https://www.python.org/dev/peps/pep-0440/)
 
-
 Standard modules
-----------------
+------------------------------------------------------------------------------
 
 * The **`ast`** module ([doc][ast-doc], [tests][ast-tests]) - Abstract Syntax Trees
   - Scary example code:
@@ -125,7 +124,6 @@ Standard modules
 
 * The **`unittest`** module ([doc][unittest-doc]) - Unit testing framework
 
-
 [ast-doc]: https://docs.python.org/3/library/ast.html
 [ast-tests]: ./tests/std_modules/test_module_ast.py
 [http-server-doc]: https://docs.python.org/3/library/http.server.html
@@ -137,10 +135,9 @@ Standard modules
 [socket-tests]: ./tests/std_modules/test_module_socket.py
 [socketserver-doc]: https://docs.python.org/3/library/socketserver.html
 [unittest-doc]: https://docs.python.org/3/library/unittest.html
-  
 
 Project packaging and setup
----------------------------
+------------------------------------------------------------------------------
 
 ### How do you set up a project again?  What are all of those files for?
 
