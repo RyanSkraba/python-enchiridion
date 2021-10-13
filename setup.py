@@ -27,6 +27,16 @@ def readme():
         return f.read()
 
 
+# Installing avro from PyPI
+avro_install_requires = "avro==1.10.2"
+
+# Example of avro installed locally
+# avro_install_requires = (
+#    "avro"
+#    f"@file://localhost{os.path.expanduser('~')}/working/apache/avro/dist/py/"
+#    "avro-1.12.0+snapshot-py2.py3-none-any.whl"
+# )
+
 setup(
     name="python-scripts",
     version="0.1",
@@ -38,7 +48,7 @@ setup(
     license="ASL",
     packages=["scanscan"],
     scripts=["bin/hello-world"],
-    install_requires=["avro==1.10.2", "docopt==0.6.2"],
+    install_requires=[avro_install_requires, "docopt==0.6.2"],
     classifiers=[
         "Development Status :: 3 - Alpha",
         "License :: OSI Approved :: Apache Software License",
