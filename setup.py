@@ -53,7 +53,6 @@ setup(
         "Development Status :: 3 - Alpha",
         "License :: OSI Approved :: Apache Software License",
     ],
-    test_suite="nose.collector",
-    tests_require=["nose"],
+    tests_require=["pytest==6.2.5"],
     zip_safe=False,
 )

@@ -57,9 +57,18 @@ flake8 bin/* scanscan/ tests/ setup.py
 
 ### [Nose](https://nose.readthedocs.io/en/latest/) is nicer testing for python
 
+Nose appears to be unmaintained since 2016.
+
 ```bash
 pip install nose
-nosetests
+nosetests -v
+```
+
+### [pytest](https://pytest.org) helps you write better programs
+
+```bash
+pip install pytest
+pytest -v
 ```
 
 ### [Tox](https://tox.readthedocs.io/en/latest/): standardize testing in Python
