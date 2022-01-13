@@ -45,18 +45,18 @@ class UnittestModuleAssertionsTestSuite(unittest.TestCase):
 
         # Note that IntelliJ gives an error message: Expected 3, Actual 2
         with self.assertRaises(AssertionError) as cm:
-            self.assertEquals(3, 1 + 1)
-        self.assertEquals(str(cm.exception), "3 != 2")
+            self.assertEqual(3, 1 + 1)
+        self.assertEqual(str(cm.exception), "3 != 2")
         with self.assertRaises(AssertionError) as cm:
             self.assertIs(3, 1 + 1)
-        self.assertEquals(str(cm.exception), "3 is not 2")
+        self.assertEqual(str(cm.exception), "3 is not 2")
 
         # All of the asserts can have messages.
         self.assertIs(2, 1 + 1, msg="Basic arithmetic")
 
         with self.assertRaises(AssertionError) as cm:
             self.assertIs(3, 1 + 1, msg="Basic arithmetic")
-        self.assertEquals(str(cm.exception), "3 is not 2 : Basic arithmetic")
+        self.assertEqual(str(cm.exception), "3 is not 2 : Basic arithmetic")
 
     def test_asserts_floating_point(self) -> None:
         """Simple examples of floating point assertions."""

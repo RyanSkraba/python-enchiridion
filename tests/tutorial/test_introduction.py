@@ -119,31 +119,31 @@ Purge them, scourge them, burnish brightly,
             self.assertEqual("word", a[:i] + a[i:], "a[:" + str(i) + "] +...")
 
         # negative indexes are ok in slices
-        self.assertEquals("or", word[1:3])
-        self.assertEquals("or", word[-3:3])
-        self.assertEquals("or", word[1:-1])
-        self.assertEquals("or", word[-3:-1])
-        self.assertEquals("wor", word[:-1])
-        self.assertEquals("ord", word[-3:])
+        self.assertEqual("or", word[1:3])
+        self.assertEqual("or", word[-3:3])
+        self.assertEqual("or", word[1:-1])
+        self.assertEqual("or", word[-3:-1])
+        self.assertEqual("wor", word[:-1])
+        self.assertEqual("ord", word[-3:])
 
         # out of bound indexes are ok in slices (NOT in lookups)
-        self.assertEquals("ord", word[1:1000])
-        self.assertEquals("wor", word[-1000:3])
+        self.assertEqual("ord", word[1:1000])
+        self.assertEqual("wor", word[-1000:3])
 
         # Strings are immutable : word[1] = "0" results in TypeError
         with self.assertRaises(TypeError):
             word[1] = 0
 
         # you can use a negative index in a lookup
-        self.assertEquals("d", word[-1])
-        self.assertEquals("r", word[-2])
+        self.assertEqual("d", word[-1])
+        self.assertEqual("r", word[-2])
 
         # But outside of a slice, a negative index must be valid
         with self.assertRaises(IndexError):
             word[-100]
 
         # and you can apply a len() function to get the size
-        self.assertEquals(4, len(word))
+        self.assertEqual(4, len(word))
 
         # raw strings with an r
         actual = (
@@ -157,64 +157,64 @@ Purge them, scourge them, burnish brightly,
 
     def testLists(self):
         a = ["spam", "eggs", 100, 1234]
-        self.assertEquals(a, ["spam", "eggs", 100, 1234])
+        self.assertEqual(a, ["spam", "eggs", 100, 1234])
 
         # Like string indices, list indices start at 0, and lists can be sliced,
         # concatenated and so on:
-        self.assertEquals(a[0], "spam")
-        self.assertEquals(a[3], 1234)
-        self.assertEquals(a[-2], 100)
-        self.assertEquals(a[1:-1], ["eggs", 100])
-        self.assertEquals(a[:2] + ["bacon", 2 * 2], ["spam", "eggs", "bacon", 4])
-        self.assertEquals(
+        self.assertEqual(a[0], "spam")
+        self.assertEqual(a[3], 1234)
+        self.assertEqual(a[-2], 100)
+        self.assertEqual(a[1:-1], ["eggs", 100])
+        self.assertEqual(a[:2] + ["bacon", 2 * 2], ["spam", "eggs", "bacon", 4])
+        self.assertEqual(
             3 * a[:3] + ["Boo!"],
             ["spam", "eggs", 100, "spam", "eggs", 100, "spam", "eggs", 100, "Boo!"],
         )
 
         # All slice operations return a new list containing the requested elements.
         # This means that the following slice returns a shallow copy of the list a:
-        self.assertEquals(a[:], ["spam", "eggs", 100, 1234])
+        self.assertEqual(a[:], ["spam", "eggs", 100, 1234])
         self.assertIsNot(a, a[:])
         # Unlike strings, which are immutable, it is possible to change individual
         # elements of a list:
-        self.assertEquals(a, ["spam", "eggs", 100, 1234])
+        self.assertEqual(a, ["spam", "eggs", 100, 1234])
         a[2] = a[2] + 23
-        self.assertEquals(a, ["spam", "eggs", 123, 1234])
+        self.assertEqual(a, ["spam", "eggs", 123, 1234])
 
         # Assignment to slices is also possible, and this can even change the size of
         # the list or clear it entirely:
         # Replace some items:
         a[0:2] = [1, 12]
-        self.assertEquals(a, [1, 12, 123, 1234])
+        self.assertEqual(a, [1, 12, 123, 1234])
         # Remove some:
         a[0:2] = []
-        self.assertEquals(a, [123, 1234])
+        self.assertEqual(a, [123, 1234])
         # Insert some:
         a[1:1] = ["bletch", "xyzzy"]
-        self.assertEquals(a, [123, "bletch", "xyzzy", 1234])
+        self.assertEqual(a, [123, "bletch", "xyzzy", 1234])
         # Insert (a copy of) itself at the beginning
         a[:0] = a
-        self.assertEquals(
+        self.assertEqual(
             a, [123, "bletch", "xyzzy", 1234, 123, "bletch", "xyzzy", 1234]
         )
         # Clear the list: replace all items with an empty list
         a[:] = []
-        self.assertEquals(a, [])
+        self.assertEqual(a, [])
 
         # The built-in function len() also applies to lists:
         a = ["a", "b", "c", "d"]
-        self.assertEquals(4, len(a))
+        self.assertEqual(4, len(a))
 
         # It is possible to nest lists (create lists containing other lists), for
         # example:
         q = [2, 3]
         p = [1, q, 4]
-        self.assertEquals(len(p), 3)
-        self.assertEquals(p[1], [2, 3])
-        self.assertEquals(p[1][0], 2)
+        self.assertEqual(len(p), 3)
+        self.assertEqual(p[1], [2, 3])
+        self.assertEqual(p[1][0], 2)
         p[1].append("xtra")  # see tutorial_5 !
-        self.assertEquals(p, [1, [2, 3, "xtra"], 4])
-        self.assertEquals(q, [2, 3, "xtra"])
+        self.assertEqual(p, [1, [2, 3, "xtra"], 4])
+        self.assertEqual(q, [2, 3, "xtra"])
 
 
 if __name__ == "__main__":
