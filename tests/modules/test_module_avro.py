@@ -37,9 +37,16 @@ class AvroModuleTestSuite(unittest.TestCase):
         self.assertEqual(schema.type, "union")
 
         # But this is invalid
-        with self.assertRaises(avro.schema.SchemaParseException) as ex:
+        with self.assertRaises(avro.errors.SchemaParseException) as ex:
             avro.schema.parse('{"type": ["null", "string"]}')
         self.assertEqual(str(ex.exception), "Undefined type: ['null', 'string']")
+
+    def test_names(self) -> None:
+
+        # This is invalid in Avro 1.11.0
+        with self.assertRaises(avro.errors.SchemaParseException) as ex:
+            avro.schema.parse('{"type": "record", "name": "record", "fields": []}')
+        self.assertEqual(str(ex.exception), "record is a reserved type name.")
 
 
 if __name__ == "__main__":

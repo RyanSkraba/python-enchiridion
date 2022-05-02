@@ -28,7 +28,7 @@ def readme():
 
 
 # Installing avro from PyPI
-avro_install_requires = "avro==1.10.2"
+avro_install_requires = "avro==1.11.0"
 
 # Example of avro installed locally
 # avro_install_requires = (

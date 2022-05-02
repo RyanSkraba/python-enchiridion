@@ -37,16 +37,16 @@ class Tutorial3Introduction(unittest.TestCase):
         self.assertEqual(15, (2 + 3) * 3, msg="order of operations")
         self.assertEqual(3, 19 // 5, msg="floor division")
         self.assertEqual(4, 19 % 5, msg="mod division")
-        self.assertEqual(9, 3 ** 2, msg="exponents")
+        self.assertEqual(9, 3**2, msg="exponents")
 
         # Floating point
         self.assertEqual(3.8, 19 / 5, "division is always floating point")
         # Note it's a good practice to use almost equals on floats
         self.assertAlmostEqual(5.0, 2.0 + 3, msg="addition")
         self.assertAlmostEqual(3.8, 19.0 / 5, msg="division")
-        self.assertAlmostEqual(0.25, 0.5 ** 2, msg="exponents")
-        self.assertAlmostEqual(1.41421356, 2 ** 0.5, msg="seven decimal places")
-        self.assertAlmostEqual(1.41, round(2 ** 0.5, 2), msg="rounding")
+        self.assertAlmostEqual(0.25, 0.5**2, msg="exponents")
+        self.assertAlmostEqual(1.41421356, 2**0.5, msg="seven decimal places")
+        self.assertAlmostEqual(1.41, round(2**0.5, 2), msg="rounding")
 
     def testVariables(self):
         """Variable assignment."""
