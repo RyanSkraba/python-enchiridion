@@ -17,28 +17,34 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import argparse
 import unittest
-import re
 
 
-class ReModuleTestSuite(unittest.TestCase):
-    def test_match(self) -> None:
-        regex = re.compile("ab*c")
+class ArgparseModuleTestSuite(unittest.TestCase):
+    """Basic test cases."""
 
-        # matches the beginning of the string.
-        result = regex.match("abbbc")
-        self.assertEqual(result.pos, 0)
-        result = regex.match("axxxc")
-        self.assertIsNone(result)
-        result = regex.match("acxxx")
-        self.assertEqual(result.pos, 0)
-        result = regex.match("xxxacxxx")
-        self.assertIsNone(result)
+    def test_basic(self) -> None:
+        """A basic example for parsing arguments"""
+        parser = argparse.ArgumentParser(description="Process some integers.")
+        parser.add_argument(
+            "integers",
+            metavar="N",
+            type=int,
+            nargs="+",
+            help="an integer for the accumulator",
+        )
+        parser.add_argument(
+            "--sum",
+            dest="accumulate",
+            action="store_const",
+            const=sum,
+            default=max,
+            help="sum the integers (default: find the max)",
+        )
 
-    def test_replace(self) -> None:
-        out = re.sub("\\bPORJ-(\\d+)", "PROJ-\\1", "Please fix PORJ-986 first")
-        self.assertEqual(out, "Please fix PROJ-986 first")
+        args = parser.parse_args(["--sum", "7", "-1", "42"])
+        print(args.accumulate(args.integers))
 
 
 if __name__ == "__main__":
