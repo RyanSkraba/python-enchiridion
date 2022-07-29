@@ -157,6 +157,7 @@ Project packaging and setup
   - https://github.com/pypa/sampleproject
   - https://github.com/navdeep-G/samplemod
 - [How to make an awesome Python package in 2021](https://antonz.org/python-packaging/)
+- [How to create a Python package in 2022](https://mathspp.com/blog/how-to-create-a-python-package-in-2022)
 
 ### Files:
 
