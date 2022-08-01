@@ -21,13 +21,15 @@
 import unittest
 
 import avro.schema
+import packaging.version
 
 
 class AvroModuleTestSuite(unittest.TestCase):
-    """Test cases for Apache Avro http://avro.apache.org"""
+    """Test cases for Apache Avro https://avro.apache.org"""
+
+    avro_version = packaging.version.parse(avro.__version__)
 
     def test_avro3182(self) -> None:
-
         # These are all fine
         schema = avro.schema.parse('"string"')
         self.assertEqual(schema.type, "string")
@@ -42,11 +44,16 @@ class AvroModuleTestSuite(unittest.TestCase):
         self.assertEqual(str(ex.exception), "Undefined type: ['null', 'string']")
 
     def test_names(self) -> None:
-
-        # This is invalid in Avro 1.11.0
+        # This is an invalid type name for all versions of Avro
         with self.assertRaises(avro.errors.SchemaParseException) as ex:
-            avro.schema.parse('{"type": "record", "name": "record", "fields": []}')
-        self.assertEqual(str(ex.exception), "record is a reserved type name.")
+            avro.schema.parse('{"type": "record", "name": "int", "fields": []}')
+        self.assertEqual(str(ex.exception), "int is a reserved type name.")
+
+        # This is invalid in Avro 1.11.0 but valid in Avro 1.11.1
+        if AvroModuleTestSuite.avro_version <= packaging.version.parse("1.11.0"):
+            with self.assertRaises(avro.errors.SchemaParseException) as ex:
+                avro.schema.parse('{"type": "record", "name": "record", "fields": []}')
+            self.assertEqual(str(ex.exception), "record is a reserved type name.")
 
 
 if __name__ == "__main__":
