@@ -23,6 +23,21 @@ import re
 
 
 class ReModuleTestSuite(unittest.TestCase):
+    def test_basic(self) -> None:
+        # Precompile a pattern
+        regex = re.compile("ab*c")
+        self.assertIsInstance(regex, re.Pattern)
+        # Match (from the beginning) successfully
+        result = regex.match("abbbcd")
+        self.assertIsInstance(result, re.Match)
+        self.assertTrue(result)
+        # No match
+        result = regex.match("xac")
+        self.assertIsNone(result)
+        # Module-level functions without compiling the pattern first
+        self.assertTrue(re.match("ab*c", "abbcd"))
+        self.assertFalse(re.match("ab*c", "xac"))
+
     def test_match(self) -> None:
         regex = re.compile("ab*c")
 
