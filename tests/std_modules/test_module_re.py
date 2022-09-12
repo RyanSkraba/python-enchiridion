@@ -39,17 +39,26 @@ class ReModuleTestSuite(unittest.TestCase):
         self.assertFalse(re.match("ab*c", "xac"))
 
     def test_match(self) -> None:
-        regex = re.compile("ab*c")
+        """Finds a match at the beginning of the string."""
+        regex = re.compile("a(b*)(c*)d")
 
-        # matches the beginning of the string.
-        result = regex.match("abbbc")
+        result = regex.match("ade")
+        self.assertEqual(result[0], "ad")
+        self.assertEqual(result[1], "")
+        self.assertEqual(result[2], "")
+        self.assertEqual(result.lastindex, 2)
+
+        # Get the info used to create this match
         self.assertEqual(result.pos, 0)
-        result = regex.match("axxxc")
-        self.assertIsNone(result)
-        result = regex.match("acxxx")
-        self.assertEqual(result.pos, 0)
-        result = regex.match("xxxacxxx")
-        self.assertIsNone(result)
+        self.assertEqual(result.endpos, 3)
+        self.assertEqual(result.re, regex)
+        self.assertEqual(result.string, "ade")
+
+        result = regex.match("abbbcde")
+        self.assertEqual(result[0], "abbbcd")
+        self.assertEqual(result[1], "bbb")
+        self.assertEqual(result[2], "c")
+        self.assertEqual(result.lastindex, 2)
 
     def test_replace(self) -> None:
         out = re.sub("\\bPORJ-(\\d+)", "PROJ-\\1", "Please fix PORJ-986 first")
