@@ -60,6 +60,33 @@ class ReModuleTestSuite(unittest.TestCase):
         self.assertEqual(result[2], "c")
         self.assertEqual(result.lastindex, 2)
 
+    def test_search_match_fullmatch(self) -> None:
+        regex = re.compile("a(b*)(c*)d")
+
+        # Search, match and fullmatch are for anywhere, the start and the whole string respectively
+        self.assertEqual(regex.search("xyzabbdzyx").group(0), "abbd")
+        self.assertIsNone(regex.match("xyzabbdzyx"))
+        self.assertIsNone(regex.fullmatch("xyzabbdzyx"))
+
+        self.assertEqual(regex.search("abbdzyx").group(0), "abbd")
+        self.assertEqual(regex.match("abbdzyx").group(0), "abbd")
+        self.assertIsNone(regex.fullmatch("abbdzyx"))
+
+        self.assertEqual(regex.search("abbd").group(0), "abbd")
+        self.assertEqual(regex.match("abbd").group(0), "abbd")
+        self.assertEqual(regex.fullmatch("abbd").group(0), "abbd")
+
+        # This could be clarified with regex start and end markers
+        regex = re.compile("^a(b*)(c*)d$")
+
+        self.assertIsNone(regex.search("accdzyx"))
+        self.assertIsNone(regex.match("accdzyx"))
+        self.assertIsNone(regex.fullmatch("accdzyx"))
+
+        self.assertEqual(regex.search("accd").group(0), "accd")
+        self.assertEqual(regex.match("accd").group(0), "accd")
+        self.assertEqual(regex.fullmatch("accd").group(0), "accd")
+
     def test_replace(self) -> None:
         out = re.sub("\\bPORJ-(\\d+)", "PROJ-\\1", "Please fix PORJ-986 first")
         self.assertEqual(out, "Please fix PROJ-986 first")
