@@ -23,6 +23,12 @@ import re
 
 
 class ReModuleTestSuite(unittest.TestCase):
+    """
+    Unit tests demonstrating regular expression operations.
+
+    https://docs.python.org/3/library/re.html
+    """
+
     def test_basic(self) -> None:
         # Precompile a pattern
         regex = re.compile("ab*c")
@@ -39,53 +45,74 @@ class ReModuleTestSuite(unittest.TestCase):
         self.assertFalse(re.match("ab*c", "xac"))
 
     def test_match(self) -> None:
-        """Finds a match at the beginning of the string."""
+        """A Match object is returned by the match function."""
         regex = re.compile("a(b*)(c*)d")
-
+        # Group or __getitem__ are used to fetch groups
         result = regex.match("ade")
         self.assertEqual(result[0], "ad")
         self.assertEqual(result[1], "")
         self.assertEqual(result[2], "")
         self.assertEqual(result.lastindex, 2)
 
-        # Get the info used to create this match
+        # You can get the information used to create the match
         self.assertEqual(result.pos, 0)
         self.assertEqual(result.endpos, 3)
         self.assertEqual(result.re, regex)
         self.assertEqual(result.string, "ade")
 
-        result = regex.match("abbbcde")
-        self.assertEqual(result[0], "abbbcd")
+        result = regex.match("abbbccd")
+        self.assertEqual(result[0], "abbbccd")
         self.assertEqual(result[1], "bbb")
-        self.assertEqual(result[2], "c")
+        self.assertEqual(result[2], "cc")
         self.assertEqual(result.lastindex, 2)
+        self.assertEqual(result.expand(r"\2 \1"), "cc bbb")
 
     def test_search_match_fullmatch(self) -> None:
-        regex = re.compile("a(b*)(c*)d")
+        regex = re.compile("a.c")
 
         # Search, match and fullmatch are for anywhere, the start and the whole string respectively
-        self.assertEqual(regex.search("xyzabbdzyx").group(0), "abbd")
-        self.assertIsNone(regex.match("xyzabbdzyx"))
-        self.assertIsNone(regex.fullmatch("xyzabbdzyx"))
+        self.assertEqual(regex.search("xyzabczyx").group(0), "abc")
+        self.assertIsNone(regex.match("xyzabczyx"))
+        self.assertIsNone(regex.fullmatch("xyzabczyx"))
 
-        self.assertEqual(regex.search("abbdzyx").group(0), "abbd")
-        self.assertEqual(regex.match("abbdzyx").group(0), "abbd")
-        self.assertIsNone(regex.fullmatch("abbdzyx"))
+        self.assertEqual(regex.search("abczyx").group(0), "abc")
+        self.assertEqual(regex.match("abczyx").group(0), "abc")
+        self.assertIsNone(regex.fullmatch("abczyx"))
 
-        self.assertEqual(regex.search("abbd").group(0), "abbd")
-        self.assertEqual(regex.match("abbd").group(0), "abbd")
-        self.assertEqual(regex.fullmatch("abbd").group(0), "abbd")
+        self.assertEqual(regex.search("abc").group(0), "abc")
+        self.assertEqual(regex.match("abc").group(0), "abc")
+        self.assertEqual(regex.fullmatch("abc").group(0), "abc")
 
         # This could be clarified with regex start and end markers
-        regex = re.compile("^a(b*)(c*)d$")
+        regex = re.compile("^x.z$")
 
-        self.assertIsNone(regex.search("accdzyx"))
-        self.assertIsNone(regex.match("accdzyx"))
-        self.assertIsNone(regex.fullmatch("accdzyx"))
+        self.assertIsNone(regex.search("xyzaaa"))
+        self.assertIsNone(regex.match("xyzaaa"))
+        self.assertIsNone(regex.fullmatch("xyzaaa"))
 
-        self.assertEqual(regex.search("accd").group(0), "accd")
-        self.assertEqual(regex.match("accd").group(0), "accd")
-        self.assertEqual(regex.fullmatch("accd").group(0), "accd")
+        self.assertEqual(regex.search("xyz").group(0), "xyz")
+        self.assertEqual(regex.match("xyz").group(0), "xyz")
+        self.assertEqual(regex.fullmatch("xyz").group(0), "xyz")
+
+    def test_pos_endpos(self) -> None:
+        regex = re.compile("a{3,}c")
+
+        # Search, match and fullmatch are for anywhere, the start and the whole string respectively
+        self.assertEqual(regex.search("xaaaaaczyx", pos=0).group(0), "aaaaac")
+        self.assertEqual(regex.search("xaaaaaczyx", pos=1).group(0), "aaaaac")
+        self.assertEqual(regex.search("xaaaaaczyx", pos=2).group(0), "aaaac")
+        self.assertEqual(regex.search("xaaaaaczyx", pos=3).group(0), "aaac")
+        self.assertIsNone(regex.search("xaaaaaczyx", pos=4))
+        self.assertEqual(regex.search("xaaaaaczyx", pos=1, endpos=8).group(0), "aaaaac")
+        self.assertEqual(regex.search("xaaaaaczyx", pos=2, endpos=7).group(0), "aaaac")
+        self.assertIsNone(regex.search("xaaaaaczyx", pos=2, endpos=6))
+
+        # Note that start markers don't match positions!
+        regex = re.compile("^a{3,}c+$")
+        self.assertEqual(regex.search("aaaaacc", pos=0, endpos=7).group(0), "aaaaacc")
+        self.assertIsNone(regex.search("aaaaacc", pos=1))
+        # But end markers do.
+        self.assertEqual(regex.search("aaaaacc", pos=0, endpos=6).group(0), "aaaaac")
 
     def test_replace(self) -> None:
         out = re.sub("\\bPORJ-(\\d+)", "PROJ-\\1", "Please fix PORJ-986 first")
