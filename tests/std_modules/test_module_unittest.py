@@ -23,12 +23,18 @@ import unittest
 import warnings
 
 """
-Unit tests in Python
+Unit tests demonstrating the unit testing framework.
+
+https://docs.python.org/3/library/unittest.html
 """
 
 
 class UnittestModuleAssertionsTestSuite(unittest.TestCase):
-    """Test cases for assertions."""
+    """
+    Demonstrate assertions.
+
+    Note: Expected comes before actual in the assertions.
+    """
 
     def test_asserts_equals(self) -> None:
         """Simple examples of equality assertions."""
@@ -51,7 +57,7 @@ class UnittestModuleAssertionsTestSuite(unittest.TestCase):
             self.assertIs(3, 1 + 1)
         self.assertEqual(str(cm.exception), "3 is not 2")
 
-        # All of the asserts can have messages.
+        # All the asserts can have messages.
         self.assertIs(2, 1 + 1, msg="Basic arithmetic")
 
         with self.assertRaises(AssertionError) as cm:
