@@ -26,6 +26,11 @@ import unittest
 from typing import Optional
 
 """Tests for sockets with Python"""
+"""
+Unit tests demonstrating the low-level networking interface.
+
+https://docs.python.org/3/library/socket.html
+"""
 
 
 class EchoBytesServer(object):

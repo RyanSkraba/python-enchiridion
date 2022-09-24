@@ -21,13 +21,14 @@
 import unittest
 import re
 
+"""
+Unit tests demonstrating regular expression operations.
+
+https://docs.python.org/3/library/re.html
+"""
+
 
 class ReModuleTestSuite(unittest.TestCase):
-    """
-    Unit tests demonstrating regular expression operations.
-
-    https://docs.python.org/3/library/re.html
-    """
 
     def test_basic(self) -> None:
         # Precompile a pattern

@@ -23,6 +23,13 @@ import sys
 import unittest
 from typing import Any, Tuple
 
+"""
+Unit tests demonstrating the Abstract Syntax Trees.
+
+https://docs.python.org/3/library/ast.html
+"""
+
+
 GLOBALS_NO_BUILTINS = {"__builtins__": None}
 
 UDF_DEF_GLOBAL_SUM = """\

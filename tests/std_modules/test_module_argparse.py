@@ -20,6 +20,12 @@
 import argparse
 import unittest
 
+"""
+Unit tests demonstrating the parser for command-line options, arguments and sub-commands.
+
+https://docs.python.org/3/library/argparse.html
+"""
+
 
 class ArgparseModuleTestSuite(unittest.TestCase):
     """Basic test cases."""

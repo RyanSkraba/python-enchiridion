@@ -22,6 +22,12 @@ import unittest
 import packaging.version
 import avro
 
+"""
+Unit tests demonstrating the packaging tools.
+
+https://packaging.pypa.io/en/latest/version.html
+"""
+
 
 class PackagingModuleTestSuite(unittest.TestCase):
     def test_avro_version(self) -> None:

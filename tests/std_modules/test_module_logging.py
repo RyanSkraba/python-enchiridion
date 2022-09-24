@@ -21,6 +21,12 @@
 import unittest
 import logging
 
+"""
+Unit tests demonstrating the logging facility for Python.
+
+https://docs.python.org/3/library/logging.html
+"""
+
 
 class LoggingModuleTestSuite(unittest.TestCase):
     def test_logging(self) -> None:

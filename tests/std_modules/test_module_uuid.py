@@ -21,6 +21,12 @@
 import unittest
 import uuid
 
+"""
+Unit tests demonstrating UUID objects according to RFC 4122.
+
+https://docs.python.org/3/library/uuid.html
+"""
+
 
 class UuidModuleTestSuite(unittest.TestCase):
     def test_match(self) -> None:
