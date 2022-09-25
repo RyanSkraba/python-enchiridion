@@ -17,7 +17,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import sys
 import unittest
 import re
 
@@ -29,14 +29,15 @@ https://docs.python.org/3/library/re.html
 
 
 class ReModuleTestSuite(unittest.TestCase):
-
     def test_basic(self) -> None:
         # Precompile a pattern
         regex = re.compile("ab*c")
-        self.assertIsInstance(regex, re.Pattern)
+        if sys.version_info.minor > 6:
+            self.assertIsInstance(regex, re.Pattern)
         # Match (from the beginning) successfully
         result = regex.match("abbbcd")
-        self.assertIsInstance(result, re.Match)
+        if sys.version_info.minor > 6:
+            self.assertIsInstance(result, re.Match)
         self.assertTrue(result)
         # No match
         result = regex.match("xac")

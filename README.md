@@ -77,7 +77,7 @@ See [tox.ini](./tox.ini).
 
 ```bash
 pip install tox
-tox
+tox --skip-missing-interpreters
 ```
 
 IntelliJ setup

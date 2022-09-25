@@ -502,8 +502,8 @@ class AstModuleTestSuite(unittest.TestCase):
         # But the line and offset are not in the original string, but in the interpolation.
         if sys.version_info.minor <= 7:
             self.assertEqual("invalid syntax", cm.exception.msg)
-            self.assertEqual(cm.exception.lineno)
-            self.assertEqual(cm.exception.offset)
+            self.assertEqual(1, cm.exception.lineno)
+            self.assertEqual(3, cm.exception.offset)
         elif sys.version_info.minor <= 8:
             self.assertEqual("invalid syntax", cm.exception.msg)
             self.assertEqual(1, cm.exception.lineno)
