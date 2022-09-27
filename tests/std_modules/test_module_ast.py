@@ -409,13 +409,17 @@ class AstModuleTestSuite(unittest.TestCase):
         udf, scan = udfize_def(CODE_OSNAME_BUILTINS)
         self.assertEqual(set(), scan.modules)
         self.assertEqual({"__builtins__"}, scan.double_underscore)
-        if not (platform.python_implementation() == "PyPy" and sys.version_info.minor <= 9):
+        if not (
+            platform.python_implementation() == "PyPy" and sys.version_info.minor <= 9
+        ):
             self.assertEqual("Hello World7 from posix", udf("World7"))
 
         udf, scan = udfize_def(CODE_OSNAME_BUILTINS_IMPORT)
         self.assertEqual(set(), scan.modules)
         self.assertEqual({"__builtins__"}, scan.double_underscore)
-        if not (platform.python_implementation() == "PyPy" and sys.version_info.minor <= 9):
+        if not (
+            platform.python_implementation() == "PyPy" and sys.version_info.minor <= 9
+        ):
             self.assertEqual("Hello World8 from posix", udf("World8"))
 
         udf, scan = udfize_def(CODE_OSNAME_BUILTINS_MODULE)
