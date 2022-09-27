@@ -19,6 +19,7 @@
 # limitations under the License.
 import ast
 import logging
+import platform
 import sys
 import unittest
 from typing import Any, Tuple
@@ -408,12 +409,14 @@ class AstModuleTestSuite(unittest.TestCase):
         udf, scan = udfize_def(CODE_OSNAME_BUILTINS)
         self.assertEqual(set(), scan.modules)
         self.assertEqual({"__builtins__"}, scan.double_underscore)
-        self.assertEqual("Hello World7 from posix", udf("World7"))
+        if not (platform.python_implementation() == "PyPy" and sys.version_info.minor <= 9):
+            self.assertEqual("Hello World7 from posix", udf("World7"))
 
         udf, scan = udfize_def(CODE_OSNAME_BUILTINS_IMPORT)
         self.assertEqual(set(), scan.modules)
         self.assertEqual({"__builtins__"}, scan.double_underscore)
-        self.assertEqual("Hello World8 from posix", udf("World8"))
+        if not (platform.python_implementation() == "PyPy" and sys.version_info.minor <= 9):
+            self.assertEqual("Hello World8 from posix", udf("World8"))
 
         udf, scan = udfize_def(CODE_OSNAME_BUILTINS_MODULE)
         self.assertEqual({"builtins"}, scan.modules)
@@ -438,7 +441,10 @@ class AstModuleTestSuite(unittest.TestCase):
         self.assertEqual({"os"}, scan.modules)
         self.assertEqual(set(), scan.double_underscore)
 
-        if sys.version_info.minor <= 7:
+        if platform.python_implementation() == "PyPy":
+            # An error isn't thrown in PyPy
+            self.assertEqual("Hello World from posix", udf("World"))
+        elif sys.version_info.minor <= 7:
             with self.assertRaises(ImportError):
                 udf("World")
         else:
@@ -486,7 +492,9 @@ class AstModuleTestSuite(unittest.TestCase):
         # Otherwise, row 1 and column 29 is effectively where the error occurred.
         self.assertEqual(0, cm.exception.lineno - 2)
 
-        if sys.version_info.minor <= 7:
+        if platform.python_implementation() == "PyPy":
+            self.assertEqual(29, cm.exception.offset - 1)
+        elif sys.version_info.minor <= 7:
             self.assertEqual(30, cm.exception.offset - 1)
         else:
             self.assertEqual(29, cm.exception.offset - 1)
@@ -500,7 +508,19 @@ class AstModuleTestSuite(unittest.TestCase):
             udfize_def("""output = f"Everything is {in}!" """)
 
         # But the line and offset are not in the original string, but in the interpolation.
-        if sys.version_info.minor <= 7:
+        if platform.python_implementation() == "PyPy" and sys.version_info.minor == 6:
+            self.assertEqual("invalid syntax", cm.exception.msg)
+            self.assertEqual(1, cm.exception.lineno)
+            self.assertEqual(2, cm.exception.offset)
+        elif platform.python_implementation() == "PyPy" and sys.version_info.minor <= 8:
+            self.assertEqual("invalid syntax", cm.exception.msg)
+            self.assertEqual(2, cm.exception.lineno)
+            self.assertEqual(28, cm.exception.offset)
+        elif platform.python_implementation() == "PyPy" and sys.version_info.minor <= 9:
+            self.assertEqual("f-string: invalid syntax", cm.exception.msg)
+            self.assertEqual(2, cm.exception.lineno)
+            self.assertEqual(28, cm.exception.offset)
+        elif sys.version_info.minor <= 7:
             self.assertEqual("invalid syntax", cm.exception.msg)
             self.assertEqual(1, cm.exception.lineno)
             self.assertEqual(3, cm.exception.offset)
