@@ -19,9 +19,25 @@
 # limitations under the License.
 
 import unittest
-
+import io
 import avro.schema
+import avro.io
 import packaging.version
+
+
+def write_datum(datum, writers_schema):
+    writer = io.BytesIO()
+    encoder = avro.io.BinaryEncoder(writer)
+    datum_writer = avro.io.DatumWriter(writers_schema)
+    datum_writer.write(datum, encoder)
+    return writer, encoder, datum_writer
+
+
+def read_datum(buffer, writers_schema, readers_schema=None):
+    reader = io.BytesIO(buffer)
+    decoder = avro.io.BinaryDecoder(reader)
+    datum_reader = avro.io.DatumReader(writers_schema, readers_schema)
+    return datum_reader.read(decoder)
 
 
 class AvroModuleTestSuite(unittest.TestCase):
@@ -54,6 +70,29 @@ class AvroModuleTestSuite(unittest.TestCase):
             with self.assertRaises(avro.errors.SchemaParseException) as ex:
                 avro.schema.parse('{"type": "record", "name": "record", "fields": []}')
             self.assertEqual(str(ex.exception), "record is a reserved type name.")
+
+    def test_record(self):
+        writers_schema = avro.schema.parse(
+            """
+                {
+                  "type" : "record",
+                  "name" : "SimpleRecord",
+                  "doc" : "Simple two column record",
+                  "fields" : [ {
+                    "name" : "id",
+                    "type" : "long"
+                  }, {
+                    "name" : "name",
+                    "type" : "string"
+                  } ]
+                }"""
+        )
+        datum = {"id": 1, "name": "one"}
+        writer, encoder, datum_writer = write_datum(datum, writers_schema)
+        buffer = writer.getvalue()
+        self.assertEqual(len(buffer), 5)
+        round_trip_datum = read_datum(buffer, writers_schema)
+        self.assertEqual(round_trip_datum, {"id": 1, "name": "one"})
 
 
 if __name__ == "__main__":
