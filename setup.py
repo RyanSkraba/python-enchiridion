@@ -38,11 +38,11 @@ avro_install_requires = "avro==1.11.1"
 # )
 
 setup(
-    name="python-scripts",
+    name="python-enchiridion",
     version="0.1",
     description="My Python scripts, examples and how-tos.",
     long_description=readme(),
-    url="http://github.com/RyanSkraba/python-examples",
+    url="http://github.com/RyanSkraba/python-enchiridion",
     author="Ryan Skraba",
     author_email="ryan@skraba.com",
     license="ASL",
