@@ -298,9 +298,15 @@ class AstModuleTestSuite(unittest.TestCase):
 
         with self.assertRaises(NameError) as cm:
             udf(100, 23)  # noqa: F821
-        self.assertIn(
-            "local variable 'udf' referenced before assignment", cm.exception.args
-        )
+        if sys.version_info.major == 3 and sys.version_info.minor <= 10:
+            self.assertIn(
+                "local variable 'udf' referenced before assignment", cm.exception.args
+            )
+        else:
+            self.assertIn(
+                "cannot access local variable 'udf' where it is not associated with a value",
+                cm.exception.args,
+            )
 
         udf = glb_ctx["udf"]
         self.assertEqual(123, udf(100, 23))
