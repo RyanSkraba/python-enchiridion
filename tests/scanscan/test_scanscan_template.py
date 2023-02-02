@@ -41,8 +41,8 @@ class ScanScanTemplateTestSuite(unittest.TestCase):
             tmpl = ScanScanTemplate(
                 dtmp / "test.template", str(dtmp / "test.output%s.txt")
             )
-            with open(dtmp / "test.input", "r") as input:
-                tmpl.apply_input(input)
+            with open(dtmp / "test.input", "r") as infile:
+                tmpl.apply_input(infile)
             tmpl.write()
 
             self.assertTrue(os.path.exists(dtmp / "test.output1.txt"))
