@@ -119,6 +119,8 @@ Standard modules
   - [Tutorial - Dynamic Python](https://realpython.com/python-eval-function/)
   - [Better docs](https://greentreesnakes.readthedocs.io/en/latest/)
 
+* The **`dataclasses`module ([doc][dataclasses-doc], [PEP 557], [tests][dataclasses-tests]) - Data Classes
+
 * The **`http.server`** module ([doc][http-server-doc]) - HTTP servers
 
 * The **`logging`** module ([doc][logging-doc], [tests][logging-tests]) - Logging facility for Python
@@ -136,6 +138,8 @@ Standard modules
 [ast-doc]: https://docs.python.org/3/library/ast.html
 [ast-tests]: ./tests/std_modules/test_module_ast.py
 [http-server-doc]: https://docs.python.org/3/library/http.server.html
+[dataclasses-doc]: https://docs.python.org/3/library/dataclasses.html "dataclasses"
+[dataclasses-tests]: ./tests/std_modules/test_module_dataclasses.py
 [logging-doc]: https://docs.python.org/3/library/logging.html
 [logging-tests]: ./tests/std_modules/test_module_logging.py
 [re-doc]: https://docs.python.org/3/library/re.html
@@ -144,6 +148,7 @@ Standard modules
 [socket-tests]: ./tests/std_modules/test_module_socket.py
 [socketserver-doc]: https://docs.python.org/3/library/socketserver.html
 [unittest-doc]: https://docs.python.org/3/library/unittest.html
+[PEP 557]: https://peps.python.org/pep-0557/ [PEP 557 - Data Classes]
 
 Project packaging and setup
 ------------------------------------------------------------------------------
