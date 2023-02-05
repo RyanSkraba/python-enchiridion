@@ -42,6 +42,10 @@ class DataclassesModuleTestSuite(unittest.TestCase):
         record = SimpleRecord("one", 1)
         self.assertEqual(1, record.id)
         self.assertEqual("one", record.name)
+        self.assertEqual("SimpleRecord(name='one', id=1)", record.__repr__())
+
+        record0 = SimpleRecord("zero")
+        self.assertEqual("SimpleRecord(name='zero', id=0)", record0.__repr__())
 
 
 if __name__ == "__main__":
