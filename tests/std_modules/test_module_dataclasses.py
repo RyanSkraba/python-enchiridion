@@ -17,6 +17,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import dataclasses
 from dataclasses import dataclass
 import unittest
 
@@ -27,28 +28,45 @@ https://docs.python.org/3/library/dataclasses.html
 """
 
 
-@dataclass
-class SimpleRecord:
-    """An id and a name."""
+@dataclass(order=True)
+class IssueId:
+    """An issue has a project identifier and a number"""
 
-    name: str
-    id: int = 0
+    prj: str
+    num: int = 0
 
 
 class DataclassesModuleTestSuite(unittest.TestCase):
     """Basic test cases."""
 
-    def test_simple_record(self) -> None:
-        record = SimpleRecord("one", 1)
-        self.assertEqual(1, record.id)
-        self.assertEqual("one", record.name)
-        self.assertEqual("SimpleRecord(name='one', id=1)", record.__repr__())
-        self.assertEqual(SimpleRecord(id=1, name="one"), record)
+    def test_issue_id(self) -> None:
+        issue = IssueId("PRJ", 1)
+        self.assertEqual("PRJ", issue.prj)
+        self.assertEqual(1, issue.num)
+        self.assertEqual("IssueId(prj='PRJ', num=1)", issue.__repr__())
+        self.assertEqual(IssueId(num=1, prj="PRJ"), issue)
 
-        record0 = SimpleRecord("zero")
-        self.assertEqual("SimpleRecord(name='zero', id=0)", record0.__repr__())
+    def test_issue_id_with_default(self) -> None:
+        issue = IssueId("PRJ")
+        self.assertEqual("IssueId(prj='PRJ', num=0)", issue.__repr__())
+        self.assertEqual(IssueId("PRJ", 0), issue)
+        self.assertNotEqual(IssueId("PRJ", 1), issue)
+        self.assertLess(IssueId("PRJ", -1), issue)
 
-        self.assertNotEqual(record, record0)
+    def test_issue_id_with_modification(self) -> None:
+        issue = IssueId("PRJ")
+        self.assertEqual("IssueId(prj='PRJ', num=0)", issue.__repr__())
+        issue.num = 999
+        self.assertEqual("IssueId(prj='PRJ', num=999)", issue.__repr__())
+
+    def test_issue_id_with_replace(self) -> None:
+        issue = IssueId("PRJ")
+        issue2 = dataclasses.replace(issue)
+        self.assertEqual(issue, issue2)
+        issue2.prj = "NEW"
+        self.assertNotEqual(issue, issue2)
+        issue3 = dataclasses.replace(issue2, num=1000)
+        self.assertEqual(IssueId("NEW", 1000), issue3)
 
 
 if __name__ == "__main__":
