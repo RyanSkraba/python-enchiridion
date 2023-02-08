@@ -35,6 +35,10 @@ class IssueId:
     prj: str
     num: int = 0
 
+    def __str__(self):
+        """A custom string representation for the class"""
+        return f"{self.prj}-{self.num}"
+
 
 class DataclassesModuleTestSuite(unittest.TestCase):
     """Basic test cases."""
@@ -45,6 +49,11 @@ class DataclassesModuleTestSuite(unittest.TestCase):
         self.assertEqual(1, issue.num)
         self.assertEqual("IssueId(prj='PRJ', num=1)", issue.__repr__())
         self.assertEqual(IssueId(num=1, prj="PRJ"), issue)
+
+    def test_issue_id_str(self) -> None:
+        issue = IssueId("PRJ", 123)
+        self.assertEqual("PRJ-123", issue.__str__())
+        self.assertEqual("PRJ-123", str(issue))
 
     def test_issue_id_with_default(self) -> None:
         issue = IssueId("PRJ")
