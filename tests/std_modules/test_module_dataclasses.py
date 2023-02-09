@@ -39,16 +39,17 @@ class IssueId:
         """A custom string representation for the class"""
         return f"{self.prj}-{self.num}"
 
+ISSUE0 = IssueId("PRJ")
+ISSUE1 = IssueId("PRJ", 1)
 
 class DataclassesModuleTestSuite(unittest.TestCase):
     """Basic test cases."""
 
     def test_issue_id(self) -> None:
-        issue = IssueId("PRJ", 1)
-        self.assertEqual("PRJ", issue.prj)
-        self.assertEqual(1, issue.num)
-        self.assertEqual("IssueId(prj='PRJ', num=1)", issue.__repr__())
-        self.assertEqual(IssueId(num=1, prj="PRJ"), issue)
+        self.assertEqual("PRJ", ISSUE1.prj)
+        self.assertEqual(1, ISSUE1.num)
+        self.assertEqual("IssueId(prj='PRJ', num=1)", ISSUE1.__repr__())
+        self.assertEqual(IssueId(num=1, prj="PRJ"), ISSUE1)
 
     def test_issue_id_str(self) -> None:
         issue = IssueId("PRJ", 123)
@@ -56,26 +57,31 @@ class DataclassesModuleTestSuite(unittest.TestCase):
         self.assertEqual("PRJ-123", str(issue))
 
     def test_issue_id_with_default(self) -> None:
-        issue = IssueId("PRJ")
-        self.assertEqual("IssueId(prj='PRJ', num=0)", issue.__repr__())
-        self.assertEqual(IssueId("PRJ", 0), issue)
-        self.assertNotEqual(IssueId("PRJ", 1), issue)
-        self.assertLess(IssueId("PRJ", -1), issue)
+        self.assertEqual("IssueId(prj='PRJ', num=0)", ISSUE0.__repr__())
+        self.assertEqual(IssueId("PRJ", 0), ISSUE0)
+        self.assertNotEqual(IssueId("PRJ", 1), ISSUE0)
+        self.assertLess(IssueId("PRJ", -1), ISSUE0)
 
     def test_issue_id_with_modification(self) -> None:
-        issue = IssueId("PRJ")
-        self.assertEqual("IssueId(prj='PRJ', num=0)", issue.__repr__())
+        issue = IssueId("PRJ", 123)
+        self.assertEqual("IssueId(prj='PRJ', num=123)", issue.__repr__())
         issue.num = 999
         self.assertEqual("IssueId(prj='PRJ', num=999)", issue.__repr__())
 
     def test_issue_id_with_replace(self) -> None:
-        issue = IssueId("PRJ")
-        issue2 = dataclasses.replace(issue)
-        self.assertEqual(issue, issue2)
-        issue2.prj = "NEW"
-        self.assertNotEqual(issue, issue2)
-        issue3 = dataclasses.replace(issue2, num=1000)
-        self.assertEqual(IssueId("NEW", 1000), issue3)
+        issue = dataclasses.replace(ISSUE0)
+        self.assertEqual(ISSUE0, issue)
+        self.assertIsNot(ISSUE0, issue)
+        issue.prj = "NEW"
+        self.assertNotEqual(ISSUE0, issue)
+        issue2 = dataclasses.replace(issue, num=1000)
+        self.assertEqual("NEW-1000", str(issue2))
+
+    def test_issue_id_asdict(self) -> None:
+        issue_dict = dataclasses.asdict(ISSUE1)
+        issue_dict
+        self.assertEqual(issue_dict["prj"], "PRJ")
+        self.assertEqual(issue_dict["num"], 1)
 
 
 if __name__ == "__main__":
