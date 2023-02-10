@@ -39,8 +39,10 @@ class IssueId:
         """A custom string representation for the class"""
         return f"{self.prj}-{self.num}"
 
+
 ISSUE0 = IssueId("PRJ")
 ISSUE1 = IssueId("PRJ", 1)
+
 
 class DataclassesModuleTestSuite(unittest.TestCase):
     """Basic test cases."""
@@ -79,9 +81,11 @@ class DataclassesModuleTestSuite(unittest.TestCase):
 
     def test_issue_id_asdict(self) -> None:
         issue_dict = dataclasses.asdict(ISSUE1)
-        issue_dict
-        self.assertEqual(issue_dict["prj"], "PRJ")
-        self.assertEqual(issue_dict["num"], 1)
+        self.assertDictEqual({"prj": "PRJ", "num": 1}, issue_dict)
+
+    def test_issue_id_astuple(self) -> None:
+        issue_tuple = dataclasses.astuple(ISSUE1)
+        self.assertTupleEqual(("PRJ", 1), issue_tuple)
 
 
 if __name__ == "__main__":
