@@ -87,6 +87,15 @@ class DataclassesModuleTestSuite(unittest.TestCase):
         issue_tuple = dataclasses.astuple(ISSUE1)
         self.assertTupleEqual(("PRJ", 1), issue_tuple)
 
+    def test_make_dataclass(self) -> None:
+        dynamic_dataclass = dataclasses.make_dataclass(
+            "IssueId", [("prj", str), ("num", int)]
+        )
+        issue = dynamic_dataclass("PRJ", 1)
+        self.assertEqual("IssueId(prj='PRJ', num=1)", issue.__repr__())
+        issue.num = 123
+        self.assertEqual("IssueId(prj='PRJ', num=123)", issue.__repr__())
+
 
 if __name__ == "__main__":
     unittest.main()
