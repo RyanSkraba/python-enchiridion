@@ -28,11 +28,13 @@ import unittest
 class Basic(object):
     """A basic class with instance and class attributes and methods."""
 
+    # A class attribute, accessed as self.d or Basic.d
     d = "Dd"
 
     def __init__(self, a="Aa", b="Bb"):
         """Constructor."""
         super(Basic, self).__init__()
+        # Instance attributes, accessed only as self.a, etc.
         self.a = a
         self.b = b
         self.c = "Cc"
@@ -43,9 +45,12 @@ class Basic(object):
     def b_upper(self):
         return self.b.upper()
 
+    @staticmethod
+    def d_lower():
+        return Basic.d.lower()
+
 
 class BasicWithSlots(object):
-
     __slots__ = ["a", "b"]
 
     d = "D"
@@ -60,7 +65,6 @@ class BasicWithSlots(object):
 
 class BasicObjectTestSuite(unittest.TestCase):
     def testBasic(self):
-
         test = Basic()
         self.assertEqual(test.a, "Aa")
         self.assertEqual(test.b, "Bb")
@@ -68,11 +72,15 @@ class BasicObjectTestSuite(unittest.TestCase):
         self.assertEqual(test.d, "Dd")
         self.assertEqual(test.a_lower(), "aa")
         self.assertEqual(test.b_upper(), "BB")
+        self.assertEqual(test.d_lower(), "dd")
 
         # The class method
         self.assertEqual(Basic.d, "Dd")
         Basic.d = "Dd" * 10
+        self.assertEqual(test.d, "DdDdDdDdDdDdDdDdDdDd")
         self.assertEqual(Basic.d, "DdDdDdDdDdDdDdDdDdDd")
+        self.assertEqual(test.d_lower(), "dddddddddddddddddddd")
+        self.assertEqual(Basic.d_lower(), "dddddddddddddddddddd")
 
         # A new instance
         test = Basic("AaAaAa", "BbBb")
@@ -82,6 +90,7 @@ class BasicObjectTestSuite(unittest.TestCase):
         self.assertEqual(test.d, "DdDdDdDdDdDdDdDdDdDd")
         self.assertEqual(test.a_lower(), "aaaaaa")
         self.assertEqual(test.b_upper(), "BBBB")
+        self.assertEqual(test.d_lower(), "dddddddddddddddddddd")
 
 
 if __name__ == "__main__":
