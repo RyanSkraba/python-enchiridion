@@ -82,12 +82,21 @@ class UnittestModuleAssertionsTestSuite(unittest.TestCase):
         self.assertSequenceEqual([1, 2], (1, 1 + 1))
         self.assertListEqual([1, 2], [1, 1 + 1])
         self.assertTupleEqual((1, 2), (1, 1 + 1))
-        self.assertSetEqual({1, 2}, {2, 1})
 
+        self.assertCountEqual([1, 2, 2, 3], [3, 2, 1, 2])
+
+    def test_asserts_collections_set(self) -> None:
+        """Simple examples of collection assertions."""
+        self.assertSetEqual({1, 2}, {2, 1})
         self.assertIn(1, {1, 2})
         self.assertNotIn(2, {1, 3})
-        self.assertDictEqual({"id": 2}, {"id": 1 + 1})
-        self.assertCountEqual([1, 2, 2, 3], [3, 2, 1, 2])
+
+    def test_asserts_collections_dict(self) -> None:
+        dict1 = {"id": 1 + 1, "name": "two"}
+        self.assertDictEqual({"name": "two", "id": 2}, dict1)
+        self.assertIn("id", dict1)
+        self.assertNotIn("description", dict1)
+        self.assertEqual(2, dict1["id"])
 
     def test_asserts_others(self) -> None:
         """Simple examples of collection assertions."""
