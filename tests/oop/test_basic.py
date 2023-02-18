@@ -25,6 +25,17 @@ Object-oriented python notes.
 import unittest
 
 
+class A(object):
+    def __init__(self, a="a1"):
+        self.a = a
+
+
+class B(A):
+    def __init__(self, a="a2", b="b1"):
+        super(B, self).__init__(a)
+        self.b = b
+
+
 class Basic(object):
     """A basic class with instance and class attributes and methods."""
 
@@ -91,6 +102,22 @@ class BasicObjectTestSuite(unittest.TestCase):
         self.assertEqual(test.a_lower(), "aaaaaa")
         self.assertEqual(test.b_upper(), "BBBB")
         self.assertEqual(test.d_lower(), "dddddddddddddddddddd")
+        self.assertEqual(test.d_upper(), "DDDDDDDDDDDDDDDDDDDD")
+
+    def testInheritance(self):
+        a = A()
+        b = B()
+        self.assertEqual(a.a, "a1")
+        self.assertEqual(b.a, "a2")
+        self.assertEqual(b.b, "b1")
+        self.assertIsInstance(a, A)
+        self.assertNotIsInstance(a, B)
+        self.assertIsInstance(b, A)
+        self.assertIsInstance(b, B)
+        self.assertTrue(isinstance(a, A))
+        self.assertFalse(isinstance(a, B))
+        self.assertTrue(isinstance(b, A))
+        self.assertTrue(isinstance(b, B))
 
 
 if __name__ == "__main__":
