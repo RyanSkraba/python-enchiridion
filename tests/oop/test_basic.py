@@ -58,7 +58,18 @@ class Basic(object):
 
     @staticmethod
     def d_lower():
+        """
+        A static method takes no extra self or cls arguments and can only access class state
+        directly.
+        """
         return Basic.d.lower()
+
+    @classmethod
+    def d_upper(cls):
+        """
+        A class method takes the class object as an argument and can access class state through it.
+        """
+        return cls.d.upper()
 
 
 class BasicWithSlots(object):
@@ -84,6 +95,7 @@ class BasicObjectTestSuite(unittest.TestCase):
         self.assertEqual(test.a_lower(), "aa")
         self.assertEqual(test.b_upper(), "BB")
         self.assertEqual(test.d_lower(), "dd")
+        self.assertEqual(test.d_upper(), "DD")
 
         # The class method
         self.assertEqual(Basic.d, "Dd")
@@ -92,6 +104,7 @@ class BasicObjectTestSuite(unittest.TestCase):
         self.assertEqual(Basic.d, "DdDdDdDdDdDdDdDdDdDd")
         self.assertEqual(test.d_lower(), "dddddddddddddddddddd")
         self.assertEqual(Basic.d_lower(), "dddddddddddddddddddd")
+        self.assertEqual(Basic.d_upper(), "DDDDDDDDDDDDDDDDDDDD")
 
         # A new instance
         test = Basic("AaAaAa", "BbBb")
