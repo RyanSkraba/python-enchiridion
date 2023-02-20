@@ -3,6 +3,9 @@
 *.iml
 .vscode
 
+# local version set with pyenv (https://github.com/pyenv/pyenv)
+.python-version
+
 # https://raw.githubusercontent.com/github/gitignore/master/Python.gitignore
 
 # Byte-compiled / optimized / DLL files
