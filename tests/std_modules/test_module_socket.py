@@ -162,7 +162,6 @@ class EchoBytesClient(object):
 
 class SocketModuleTestSuite(unittest.TestCase):
     def test_echo_bytes_server_basic(self) -> None:
-
         """Simple client/server communication with the server and client."""
         with EchoBytesServer(timeout=10) as srv:
             port = srv.get_port()

@@ -119,7 +119,9 @@ Standard modules
   - [Tutorial - Dynamic Python](https://realpython.com/python-eval-function/)
   - [Better docs](https://greentreesnakes.readthedocs.io/en/latest/)
 
-* The **`dataclasses`module ([doc][dataclasses-doc], [PEP 557], [tests][dataclasses-tests]) - Data Classes
+* The **`dataclasses`** module ([doc][dataclasses-doc], [PEP 557], [tests][dataclasses-tests]) - Data Classes
+
+* The **`datetime`** module ([doc][datetime-doc], [tests][datetime-tests]) - Basic date and time types 
 
 * The **`http.server`** module ([doc][http-server-doc]) - HTTP servers
 
@@ -140,6 +142,8 @@ Standard modules
 [http-server-doc]: https://docs.python.org/3/library/http.server.html
 [dataclasses-doc]: https://docs.python.org/3/library/dataclasses.html "dataclasses"
 [dataclasses-tests]: ./tests/std_modules/test_module_dataclasses.py
+[datetime-doc]: https://docs.python.org/3/library/datetime.html "datetime"
+[datetime-tests]: ./tests/std_modules/test_module_datetime.py
 [logging-doc]: https://docs.python.org/3/library/logging.html
 [logging-tests]: ./tests/std_modules/test_module_logging.py
 [re-doc]: https://docs.python.org/3/library/re.html
